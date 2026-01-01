@@ -130,11 +130,17 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
   };
 
   const resizeHandleStyle = {
-      width: '20px',
-      height: '20px',
-      marginTop: '-10px',
-      marginLeft: '-10px',
+      width: '32px',
+      height: '32px',
+      marginTop: '-16px',
+      marginLeft: '-16px',
+      border: '3px solid white',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+      zIndex: 50,
   };
+
+  // Padding around the image for easier edge manipulation
+  const PADDING = 60;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -186,7 +192,7 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 relative overflow-hidden bg-zinc-900 p-0 flex items-center justify-center">
+        <CardContent className="flex-1 relative overflow-auto bg-zinc-900 p-0 flex items-center justify-center">
             {/* Mobile Results Overlay (Visible only on small screens) */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex md:hidden items-center gap-2 bg-background/90 backdrop-blur px-3 py-2 rounded-full shadow-lg border">
                   {isProcessing ? (
@@ -200,15 +206,29 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
                   )}
             </div>
 
-          <div className="relative inline-block">
-             <img 
-                ref={imgRef}
-                src={imageSrc} 
-                onLoad={handleImageLoad}
-                alt="Measurement Target" 
-                className="max-h-[75vh] max-w-full object-contain select-none pointer-events-none"
-                draggable={false}
-              />
+          {/* Outer container with padding for easier edge manipulation */}
+          <div 
+            className="relative inline-block bg-zinc-800/50 rounded-lg"
+            style={{ padding: `${PADDING}px` }}
+          >
+            {/* Image boundary indicator */}
+            <div className="absolute inset-0 pointer-events-none" style={{ 
+              top: PADDING, 
+              left: PADDING, 
+              right: PADDING, 
+              bottom: PADDING,
+              border: '1px dashed rgba(255,255,255,0.2)'
+            }} />
+            
+            <div className="relative inline-block">
+               <img 
+                  ref={imgRef}
+                  src={imageSrc} 
+                  onLoad={handleImageLoad}
+                  alt="Measurement Target" 
+                  className="max-h-[65vh] max-w-full object-contain select-none pointer-events-none"
+                  draggable={false}
+                />
               
               {isImageLoaded && (
                   <>
@@ -301,6 +321,7 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
                       </Rnd>
                   </>
               )}
+            </div>
           </div>
         </CardContent>
 
