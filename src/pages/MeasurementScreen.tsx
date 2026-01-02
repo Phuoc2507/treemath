@@ -9,7 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import BoundingBoxEditor from '@/components/BoundingBoxEditor';
 import { useToast } from '@/hooks/use-toast';
 import { API_CONFIG } from '@/config/api';
+import { z } from 'zod';
 
+// Schema validation for tree analysis API response
+const TreeAnalysisSchema = z.object({
+  tree_height_m: z.number().min(0).max(100),
+  dbh_cm: z.number().min(0).max(500),
+  boxes: z.object({
+    tree: z.array(z.number()).length(4).nullable(),
+    person: z.array(z.number()).length(4).nullable(),
+  }).optional(),
+  warnings: z.array(z.string()).optional(),
+});
 const MeasurementScreen = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -82,7 +93,17 @@ const MeasurementScreen = () => {
         throw new Error(errorData.detail || "Phân tích ảnh thất bại.");
       }
 
-      const data = await response.json();
+      const rawData = await response.json();
+      
+      // Validate API response with zod schema
+      const validationResult = TreeAnalysisSchema.safeParse(rawData);
+      
+      if (!validationResult.success) {
+        console.error('Invalid API response:', validationResult.error);
+        throw new Error('Phân tích ảnh trả về dữ liệu không hợp lệ');
+      }
+      
+      const data = validationResult.data;
       
       // Check if component is still mounted before updating state
       if (isMounted.current) {
@@ -141,7 +162,17 @@ const MeasurementScreen = () => {
              throw new Error("Tính toán lại thất bại.");
         }
 
-        const data = await response.json();
+        const rawData = await response.json();
+        
+        // Validate API response with zod schema
+        const validationResult = TreeAnalysisSchema.safeParse(rawData);
+        
+        if (!validationResult.success) {
+          console.error('Invalid recalc API response:', validationResult.error);
+          throw new Error('Dữ liệu không hợp lệ');
+        }
+        
+        const data = validationResult.data;
 
         if (isMounted.current) {
              const calculatedCircumference = data.dbh_cm * Math.PI;
