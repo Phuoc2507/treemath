@@ -8,6 +8,7 @@ import { Calculator, Ruler, TreePine, MessageCircle, Camera, Loader2, AlertTrian
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import BoundingBoxEditor from '@/components/BoundingBoxEditor';
 import { useToast } from '@/hooks/use-toast';
+import { API_CONFIG } from '@/config/api';
 
 const MeasurementScreen = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const MeasurementScreen = () => {
     formData.append("file", imageFile);
 
     try {
-      const response = await fetch("https://evelynn-eructative-lura.ngrok-free.dev/predict", {
+      const response = await fetch(API_CONFIG.TREE_ANALYSIS_URL, {
         method: "POST",
         body: formData,
       });
@@ -131,7 +132,7 @@ const MeasurementScreen = () => {
       formData.append("person_box", JSON.stringify(newPersonBox));
 
       try {
-        const response = await fetch("https://evelynn-eructative-lura.ngrok-free.dev/predict", {
+        const response = await fetch(API_CONFIG.TREE_ANALYSIS_URL, {
             method: "POST",
             body: formData,
         });
