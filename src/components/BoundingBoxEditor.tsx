@@ -186,7 +186,7 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 relative overflow-hidden bg-zinc-900 p-0 flex items-center justify-center">
+        <CardContent className="flex-1 relative overflow-auto bg-zinc-900 p-0 flex items-center justify-center">
             {/* Mobile Results Overlay (Visible only on small screens) */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex md:hidden items-center gap-2 bg-background/90 backdrop-blur px-3 py-2 rounded-full shadow-lg border">
                   {isProcessing ? (
@@ -200,15 +200,17 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
                   )}
             </div>
 
-          <div className="relative inline-block">
-             <img 
-                ref={imgRef}
-                src={imageSrc} 
-                onLoad={handleImageLoad}
-                alt="Measurement Target" 
-                className="max-h-[75vh] max-w-full object-contain select-none pointer-events-none"
-                draggable={false}
-              />
+          {/* Wrapper with padding to allow resize handles at edges */}
+          <div className="p-8 min-w-fit min-h-fit">
+            <div className="relative inline-block">
+               <img 
+                  ref={imgRef}
+                  src={imageSrc} 
+                  onLoad={handleImageLoad}
+                  alt="Measurement Target" 
+                  className="max-h-[65vh] max-w-full object-contain select-none pointer-events-none"
+                  draggable={false}
+                />
               
               {isImageLoaded && (
                   <>
@@ -301,6 +303,7 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
                       </Rnd>
                   </>
               )}
+            </div>
           </div>
         </CardContent>
 
