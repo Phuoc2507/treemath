@@ -5,10 +5,20 @@ import { ArrowLeft, Bot, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
+import { z } from 'zod';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tree-measurement-chat`;
+
+// Schema for validating streaming chat response chunks
+const ChatStreamChunkSchema = z.object({
+  choices: z.array(z.object({
+    delta: z.object({
+      content: z.string().optional(),
+    }).optional(),
+  })).optional(),
+});
 
 const ChatScreen = () => {
   const navigate = useNavigate();
@@ -68,8 +78,17 @@ const ChatScreen = () => {
         if (jsonStr === '[DONE]') break;
 
         try {
-          const parsed = JSON.parse(jsonStr);
-          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          const rawParsed = JSON.parse(jsonStr);
+          
+          // Validate the chunk structure with zod
+          const validationResult = ChatStreamChunkSchema.safeParse(rawParsed);
+          if (!validationResult.success) {
+            console.warn('Invalid stream chunk format:', validationResult.error);
+            continue;
+          }
+          
+          const parsed = validationResult.data;
+          const content = parsed.choices?.[0]?.delta?.content;
           if (content) {
             assistantContent += content;
             setMessages(prev => {
