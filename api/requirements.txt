@@ -1,16 +1,18 @@
 --find-links https://download.pytorch.org/whl/cpu
---find-links https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch2.2/index.html
 
 # API specific packages
 fastapi
 uvicorn[standard]
 python-multipart
+ultralytics
 
 # Model specific packages
 torch==2.2.0
 torchvision==0.17.0
-detectron2
 opencv-python
 tqdm
 albumentations
 pyyaml
+
+# Detectron2 (Cài đặt từ Source cho Windows)
+git+https://github.com/facebookresearch/detectron2.git

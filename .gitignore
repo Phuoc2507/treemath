@@ -1,25 +1,22 @@
 # Dependencies
-node_modules
+/node_modules
 /dist
 /dist-ssr
 /build
-.history
-.venv
-venv
-ENV
-env.bak
-venv.bak
-__pycache__
-*.py[cod]
+/venv
+/.venv
+/env
+/.env
+/__pycache__
 
 # Logs
-logs
+/logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Editor
+# Editor Directories and Files
 .vscode
 .idea
 .DS_Store
@@ -33,13 +30,19 @@ yarn-error.log*
 .local
 lovable-tagger
 
-# Large Files
+# Build & Temporary files
+/detectron2.whl
+/bun.lockb
+
+# Large Files & Models (Không đưa các model và output lên Git)
 *.jpg
 *.jpeg
 *.png
+*.gif
 *.mp4
 *.pth
 *.pt
-inference_pretrained/
-output/
-ngrok/
+/inference_pretrained/
+/output/
+/ngrok/
+/.history
