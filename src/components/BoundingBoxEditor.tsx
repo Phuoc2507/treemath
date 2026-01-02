@@ -252,7 +252,7 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
                             topLeft: resizeHandleStyle,
                         }}
                       >
-                        <div className="absolute -top-7 left-0 bg-green-500 text-white text-xs px-2 py-1 rounded shadow-sm font-bold tracking-wide">
+                        <div className={`absolute left-0 bg-green-500 text-white text-xs px-2 py-1 rounded shadow-sm font-bold tracking-wide ${treeBox.y * scale < 30 ? 'top-1' : '-top-7'}`}>
                             CÂY
                         </div>
                       </Rnd>
@@ -295,7 +295,7 @@ const BoundingBoxEditor: React.FC<BoundingBoxEditorProps> = ({
                             topLeft: resizeHandleStyle,
                         }}
                       >
-                        <div className="absolute -top-7 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-sm font-bold tracking-wide">
+                        <div className={`absolute left-0 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-sm font-bold tracking-wide ${personBox.y * scale < 30 ? 'top-1' : '-top-7'}`}>
                             NGƯỜI
                         </div>
                       </Rnd>
