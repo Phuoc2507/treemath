@@ -286,7 +286,7 @@ const MeasurementScreen = () => {
               <Camera className="w-5 h-5 text-primary" />
               AI đo cây giúp bạn
             </CardTitle>
-            <CardDescription>Lưu ý AI có thể mắc sai sót, bạn hãy điều chỉnh cho đúng</CardDescription>
+            <CardDescription>Lưu ý AI có thể mắc sai sót, điều chỉnh trước khi gửi</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
