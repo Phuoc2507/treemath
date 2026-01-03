@@ -1,6 +1,6 @@
 // Cấu hình API URL
-// Thay đổi URL này khi khởi động lại ngrok
+// Sử dụng Edge Function proxy - không cần thay đổi khi khởi động lại ngrok
 export const API_CONFIG = {
-  // URL của server phân tích ảnh (ngrok hoặc localhost)
-  TREE_ANALYSIS_URL: "https://evelynn-eructative-lura.ngrok-free.dev/predict",
+  // Edge Function proxy cho phân tích ảnh (URL backend được lưu trong secrets)
+  TREE_ANALYSIS_URL: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-tree`,
 } as const;
