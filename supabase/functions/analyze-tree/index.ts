@@ -86,11 +86,16 @@ serve(async (req) => {
     if (personBox) upstreamFormData.append("person_box", personBox as string);
     if (treeBox) upstreamFormData.append("tree_box", treeBox as string);
 
-    console.log(`Proxying request to: ${upstreamUrl}`);
+    // Ensure the URL ends with /predict
+    const predictUrl = upstreamUrl.endsWith('/predict') 
+      ? upstreamUrl 
+      : `${upstreamUrl.replace(/\/$/, '')}/predict`;
+
+    console.log(`Proxying request to: ${predictUrl}`);
     console.log(`File: ${file.name}, Size: ${file.size}, Type: ${mimeType}`);
 
     // Forward to upstream Python API
-    const upstreamResponse = await fetch(upstreamUrl, {
+    const upstreamResponse = await fetch(predictUrl, {
       method: "POST",
       body: upstreamFormData,
     });
