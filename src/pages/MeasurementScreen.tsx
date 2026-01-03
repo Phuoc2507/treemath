@@ -281,12 +281,12 @@ const MeasurementScreen = () => {
 
         {/* AI Measurement Section */}
         <Card className="mb-6 bg-muted/30 border-border/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Camera className="w-5 h-5 text-primary" />
+          <CardHeader className="py-3 px-4 space-y-1">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Camera className="w-4 h-4 text-primary" />
               AI đo cây giúp bạn
             </CardTitle>
-            <CardDescription>Lưu ý AI có thể mắc sai sót, điều chỉnh trước khi gửi</CardDescription>
+            <CardDescription className="text-xs">Lưu ý AI có thể mắc sai sót, điều chỉnh trước khi gửi</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
