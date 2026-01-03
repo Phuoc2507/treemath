@@ -284,7 +284,7 @@ const MeasurementScreen = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Camera className="w-5 h-5 text-primary" />
-              Đo giúp tôi
+              AI đo cây giúp bạn
             </CardTitle>
             <CardDescription>Tải ảnh lên để AI tự động ước tính</CardDescription>
           </CardHeader>
