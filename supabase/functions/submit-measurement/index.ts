@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Trusted origins for CORS
 const ALLOWED_ORIGINS = [
+  'https://treemath.lovable.app',
   'https://vijsarilxqwghzyaygcm.lovable.app',
   'https://vijsarilxqwghzyaygcm.supabase.co',
   'http://localhost:5173',
