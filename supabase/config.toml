@@ -1,0 +1,10 @@
+project_id = "vijsarilxqwghzyaygcm"
+
+[functions.analyze-tree]
+verify_jwt = false
+
+[functions.submit-measurement]
+verify_jwt = false
+
+[functions.tree-measurement-chat]
+verify_jwt = false

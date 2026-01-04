@@ -1,0 +1,52 @@
+# Dependencies
+/node_modules
+/dist
+/dist-ssr
+/build
+/venv
+/.venv
+/env
+/.env
+/__pycache__
+
+# Logs
+/logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor Directories and Files
+.vscode
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Lovable & Vite
+.local
+lovable-tagger
+
+# Build & Temporary files
+/detectron2.whl
+/bun.lockb
+
+# Large Files & Models (Không đưa các model và output lên Git)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.pth
+*.pt
+/inference_pretrained/
+/output/
+/ngrok/
+/.history
+/node-v18.18.0-win-x64/
+/pip_cache_temp/
+/MinGit/
+*.zip
