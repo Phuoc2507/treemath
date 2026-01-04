@@ -2,21 +2,10 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Trusted origins for CORS
-const ALLOWED_ORIGINS = [
-  'https://treemath.lovable.app',
-  'https://vijsarilxqwghzyaygcm.lovable.app',
-  'https://vijsarilxqwghzyaygcm.supabase.co',
-  'http://localhost:5173',
-  'http://localhost:3000',
-];
-
-const getCorsHeaders = (origin: string) => {
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
+// CORS headers - allow all origins for public API
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 // Rate limit: max 10 requests per minute per IP
@@ -92,8 +81,7 @@ function validateInput(data: unknown): { valid: boolean; error?: string; parsed?
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin') || '';
-  const corsHeaders = getCorsHeaders(origin);
+  // Handle CORS preflight requests
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -101,7 +89,7 @@ serve(async (req) => {
   }
 
   const startTime = Date.now();
-  console.log(`[submit-measurement] Request started at ${new Date().toISOString()}, Origin: ${origin}`);
+  console.log(`[submit-measurement] Request started at ${new Date().toISOString()}`);
 
   try {
     if (req.method !== 'POST') {
