@@ -47,7 +47,7 @@ const MapScreen = () => {
         setTrees([]);
         return;
       }
-
+      
       const { data } = await backend
         .from('master_trees')
         .select('*')
