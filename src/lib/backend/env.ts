@@ -1,23 +1,17 @@
 // Centralized runtime config for the backend base URL/key.
-// NOTE: We avoid importing the auto-generated Supabase client here to prevent app-wide crashes
-// when env vars are temporarily missing in preview builds.
+// Hardcoded values to ensure they're always available
+
+const SUPABASE_PROJECT_ID = "vijsarilxqwghzyaygcm";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpanNhcmlseHF3Z2h6eWF5Z2NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNTQ0MDAsImV4cCI6MjA4MTczMDQwMH0.ERDFx8HWNcWWzxGzglucpihqycL4rgIdMLMqGjfTZUY";
 
 export const getBackendBaseUrl = (): string => {
-  const direct = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-  if (direct && direct.trim()) return direct;
-
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined;
-  if (projectId && projectId.trim()) {
-    return `https://${projectId}.supabase.co`;
-  }
-
-  return "";
+  return `https://${SUPABASE_PROJECT_ID}.supabase.co`;
 };
 
 export const getBackendPublishableKey = (): string => {
-  return (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) || "";
+  return SUPABASE_ANON_KEY;
 };
 
 export const isBackendConfigured = (): boolean => {
-  return Boolean(getBackendBaseUrl() && getBackendPublishableKey());
+  return true;
 };
