@@ -49,4 +49,5 @@ lovable-tagger
 /node-v18.18.0-win-x64/
 /pip_cache_temp/
 /MinGit/
+/temp_install/
 *.zip
