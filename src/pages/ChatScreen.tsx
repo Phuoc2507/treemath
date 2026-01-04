@@ -6,10 +6,9 @@ import { Button } from '@/components/ui/button';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
 import { z } from 'zod';
+import { getBackendBaseUrl, getBackendPublishableKey } from '@/lib/backend/env';
 
 type Message = { role: 'user' | 'assistant'; content: string };
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tree-measurement-chat`;
 
 // Schema for validating streaming chat response chunks
 const ChatStreamChunkSchema = z.object({
@@ -40,11 +39,14 @@ const ChatScreen = () => {
   }, [messages]);
 
   const streamChat = async (userMessages: Message[]) => {
-    const resp = await fetch(CHAT_URL, {
+    const baseUrl = getBackendBaseUrl();
+    if (!baseUrl) throw new Error('Missing backend base URL');
+
+    const resp = await fetch(`${baseUrl}/functions/v1/tree-measurement-chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${getBackendPublishableKey()}`,
       },
       body: JSON.stringify({ messages: userMessages }),
     });

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { getBackendClient } from "@/lib/backend/client";
+import { getBackendBaseUrl, getBackendPublishableKey } from "@/lib/backend/env";
 import { Button } from "@/components/ui/button";
 import { TreeDeciduous, ArrowRight, Send, Bot, User, MessageCircle } from "lucide-react";
 import FallingLeaves from "@/components/FallingLeaves";
@@ -98,8 +99,16 @@ const TreeQRScreen = () => {
       if (isNaN(treeNumber)) return;
       
       setLeaderboardLoading(true);
+
+      const backend = getBackendClient();
+      if (!backend) {
+        setLeaderboard([]);
+        setLeaderboardLoading(false);
+        return;
+      }
+
       // Use masked RPC function to protect student privacy
-      const { data, error } = await supabase
+      const { data, error } = await backend
         .rpc('get_leaderboard_masked', { 
           p_tree_number: treeNumber, 
           p_limit: 5 
@@ -140,13 +149,16 @@ const TreeQRScreen = () => {
     setIsLoading(true);
 
     try {
-      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tree-measurement-chat`;
+      const baseUrl = getBackendBaseUrl();
+      if (!baseUrl) throw new Error('Missing backend base URL');
+
+      const CHAT_URL = `${baseUrl}/functions/v1/tree-measurement-chat`;
       
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          "Authorization": `Bearer ${getBackendPublishableKey()}`,
         },
         body: JSON.stringify({ messages: updatedMessages }),
       });

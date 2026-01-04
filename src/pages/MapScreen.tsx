@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMeasurementStore } from '@/store/measurementStore';
-import { supabase } from '@/integrations/supabase/client';
+import { getBackendClient } from '@/lib/backend/client';
 import { useEffect, useState, useMemo } from 'react';
 import { TreeData } from '@/lib/calculations';
 
@@ -42,7 +42,13 @@ const MapScreen = () => {
 
   useEffect(() => {
     const fetchTrees = async () => {
-      const { data } = await supabase
+      const backend = getBackendClient();
+      if (!backend) {
+        setTrees([]);
+        return;
+      }
+
+      const { data } = await backend
         .from('master_trees')
         .select('*')
         .order('tree_number');

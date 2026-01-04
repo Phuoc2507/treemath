@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useMeasurementStore } from '@/store/measurementStore';
 import { getCO2Equivalents } from '@/lib/calculations';
-import { supabase } from '@/integrations/supabase/client';
+import { getBackendClient } from '@/lib/backend/client';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, useRef } from 'react';
 import { TreePine, Cloud, Car, Smartphone, Recycle, Trophy, Ruler, Circle } from 'lucide-react';
@@ -115,9 +115,15 @@ const ResultsScreen = () => {
       
       submissionTimestamps.current.push(now);
 
+      const backend = getBackendClient();
+      if (!backend) {
+        toast.error('Thiếu cấu hình backend. Vui lòng reload lại trang.');
+        return;
+      }
+
       try {
         // Submit measurement via secure edge function
-        const { data, error } = await supabase.functions.invoke('submit-measurement', {
+        const { data, error } = await backend.functions.invoke('submit-measurement', {
           body: {
             tree_id: selectedTree.treeNumber,
             user_name: userName.slice(0, 50),

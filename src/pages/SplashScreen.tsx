@@ -43,37 +43,26 @@ const SplashScreen = () => {
       {/* Main content */}
       <motion.div
         className="relative z-10 flex flex-col items-center"
-        initial={{ opacity: 0, y: 20 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.4 }}
       >
         {/* Title */}
-        <motion.h1
-          className="text-3xl md:text-4xl font-bold text-foreground mb-2 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 text-center">
           ĐO ĐẠC CÂY XANH
-        </motion.h1>
-        
-        <motion.p
-          className="text-muted-foreground text-lg mb-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          Khám phá thiên nhiên
-        </motion.p>
+        </h1>
+
+        <p className="text-muted-foreground text-lg mb-8 text-center">
+          Chạm vào vòng tròn ở giữa để bắt đầu
+        </p>
 
         {/* Tree SVG */}
         <div className="relative">
-          <motion.svg
+          <svg
             viewBox="0 0 200 300"
-            className="w-48 h-72 md:w-64 md:h-96"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            className="w-48 h-72 md:w-64 md:h-96 animate-float"
+            aria-label="Minh hoạ cây xanh"
+            role="img"
           >
             {/* Tree trunk */}
             <rect
@@ -84,49 +73,37 @@ const SplashScreen = () => {
               rx="5"
               className="fill-amber-800"
             />
-            
+
             {/* Tree crown layers */}
-            <motion.ellipse
+            <ellipse
               cx="100"
               cy="180"
               rx="60"
               ry="40"
               className="fill-tree-green-dark"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5 }}
             />
-            <motion.ellipse
+            <ellipse
               cx="100"
               cy="140"
               rx="50"
               ry="35"
               className="fill-primary"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.6 }}
             />
-            <motion.ellipse
+            <ellipse
               cx="100"
               cy="105"
               rx="40"
               ry="30"
               className="fill-tree-green-light"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.7 }}
             />
-            <motion.ellipse
+            <ellipse
               cx="100"
               cy="75"
               rx="25"
               ry="20"
               className="fill-primary"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.8 }}
             />
-          </motion.svg>
+          </svg>
 
           {/* Clickable hand indicator */}
           <motion.button
@@ -152,14 +129,9 @@ const SplashScreen = () => {
         </div>
 
         {/* Instruction text */}
-        <motion.p
-          className="text-muted-foreground mt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 0.5, 1] }}
-          transition={{ delay: 1, duration: 2, repeat: Infinity }}
-        >
+        <p className="text-muted-foreground mt-8 text-center animate-pulse">
           Chạm vào cây để bắt đầu
-        </motion.p>
+        </p>
       </motion.div>
     </div>
   );

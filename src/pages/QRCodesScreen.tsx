@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { supabase } from "@/integrations/supabase/client";
+import { getBackendClient } from "@/lib/backend/client";
 import { Button } from "@/components/ui/button";
 import { Printer, Download, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,15 @@ const QRCodesScreen = () => {
   useEffect(() => {
     const fetchTrees = async () => {
       setIsLoading(true);
-      const { data, error } = await supabase
+
+      const backend = getBackendClient();
+      if (!backend) {
+        setTrees([]);
+        setIsLoading(false);
+        return;
+      }
+
+      const { data, error } = await backend
         .from("master_trees")
         .select("id, tree_number, species, location_description")
         .order("tree_number");
