@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { getBackendClient } from '@/lib/backend/client';
 import { useMeasurementStore } from '@/store/measurementStore';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
@@ -44,8 +44,16 @@ const LeaderboardScreen = () => {
 
   const fetchLeaderboard = async (treeNum: number) => {
     setLoading(true);
+
+    const backend = getBackendClient();
+    if (!backend) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
+
     // Use masked RPC function to protect student privacy
-    const { data, error } = await supabase
+    const { data, error } = await backend
       .rpc('get_leaderboard_masked', { 
         p_tree_number: treeNum, 
         p_limit: 10 
@@ -68,8 +76,11 @@ const LeaderboardScreen = () => {
   useEffect(() => {
     fetchLeaderboard(currentTree);
 
+    const backend = getBackendClient();
+    if (!backend) return;
+
     // Subscribe to realtime updates
-    const channel = supabase
+    const channel = backend
       .channel('leaderboard-changes')
       .on(
         'postgres_changes',
@@ -85,7 +96,7 @@ const LeaderboardScreen = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      backend.removeChannel(channel);
     };
   }, [currentTree]);
 
