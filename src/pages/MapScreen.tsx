@@ -12,29 +12,29 @@ interface MasterTree {
   species: string;
 }
 
-// Tree positions on map (x, y as percentages) - aligned in straight rows
+// Tree positions on map (x, y as percentages) - 4 vertical columns
 const treePositions: { [key: number]: { x: number; y: number } } = {
-  // Row 1 - y: 15%
-  1: { x: 15, y: 15 },
-  2: { x: 30, y: 15 },
-  3: { x: 45, y: 15 },
-  4: { x: 60, y: 15 },
-  5: { x: 75, y: 15 },
-  // Row 2 - y: 35%
-  6: { x: 15, y: 35 },
-  7: { x: 30, y: 35 },
-  8: { x: 45, y: 35 },
-  9: { x: 60, y: 35 },
-  10: { x: 75, y: 35 },
-  // Row 3 - y: 55%
-  11: { x: 15, y: 55 },
-  12: { x: 30, y: 55 },
-  13: { x: 45, y: 55 },
-  14: { x: 60, y: 55 },
-  // Row 4 - y: 75%
-  15: { x: 22, y: 75 },
-  16: { x: 45, y: 75 },
-  17: { x: 68, y: 75 },
+  // Column 1 - x: 15% (5 trees)
+  1: { x: 15, y: 12 },
+  2: { x: 15, y: 30 },
+  3: { x: 15, y: 48 },
+  4: { x: 15, y: 66 },
+  5: { x: 15, y: 84 },
+  // Column 2 - x: 38% (3 trees)
+  6: { x: 38, y: 25 },
+  7: { x: 38, y: 48 },
+  8: { x: 38, y: 71 },
+  // Column 3 - x: 62% (4 trees)
+  9: { x: 62, y: 18 },
+  10: { x: 62, y: 40 },
+  11: { x: 62, y: 62 },
+  12: { x: 62, y: 84 },
+  // Column 4 - x: 85% (5 trees)
+  13: { x: 85, y: 12 },
+  14: { x: 85, y: 30 },
+  15: { x: 85, y: 48 },
+  16: { x: 85, y: 66 },
+  17: { x: 85, y: 84 },
 };
 
 const MapScreen = () => {
