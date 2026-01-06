@@ -7,6 +7,7 @@ import { useEffect, useState, useRef } from 'react';
 import { TreePine, Cloud, Car, Smartphone, Recycle, Trophy, Ruler, Circle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 // Simple rate limiting: max 5 submissions per minute per session (client-side backup)
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
@@ -383,6 +384,9 @@ const ResultsScreen = () => {
           </Button>
         </motion.div>
       </div>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 const CongratsScreen = () => {
   const navigate = useNavigate();
@@ -139,6 +140,9 @@ const CongratsScreen = () => {
           </Button>
         </motion.div>
       </motion.div>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 };

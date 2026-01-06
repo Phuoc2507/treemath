@@ -5,6 +5,7 @@ import { useMeasurementStore } from '@/store/measurementStore';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Trophy, Medal, RefreshCw, Home, ChevronLeft, ChevronRight } from 'lucide-react';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 interface LeaderboardEntry {
   id: string;
@@ -286,6 +287,9 @@ const LeaderboardScreen = () => {
           </Button>
         </motion.div>
       </motion.div>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 };

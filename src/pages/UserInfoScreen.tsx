@@ -1,19 +1,37 @@
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMeasurementStore } from '@/store/measurementStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, User, School } from 'lucide-react';
 import FallingLeaves from '@/components/FallingLeaves';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 const UserInfoScreen = () => {
   const navigate = useNavigate();
-  const { setUserInfo, selectedTree, userName, userClass } = useMeasurementStore();
+  const [searchParams] = useSearchParams();
+  const { setUserInfo, setSelectedTree, selectedTree, userName, userClass } = useMeasurementStore();
   const [name, setName] = useState(userName);
   const [className, setClassName] = useState(userClass);
   const [errors, setErrors] = useState<{ name?: string; className?: string }>({});
+
+  // Set selected tree from URL query parameter
+  useEffect(() => {
+    const treeParam = searchParams.get('tree');
+    if (treeParam) {
+      const treeNumber = parseInt(treeParam);
+      if (!isNaN(treeNumber)) {
+        setSelectedTree(treeNumber, {
+          treeNumber,
+          actualHeight: 0,
+          actualDiameter: 0,
+          species: `Cây số ${treeNumber}`
+        });
+      }
+    }
+  }, [searchParams, setSelectedTree]);
 
   // Validation constants
   const MAX_NAME_LENGTH = 50;
@@ -159,6 +177,9 @@ const UserInfoScreen = () => {
           </Button>
         </form>
       </motion.div>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 };
