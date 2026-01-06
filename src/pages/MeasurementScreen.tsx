@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useRef, useEffect } from 'react';
-import { Calculator, Ruler, TreePine, MessageCircle, Camera, Loader2, AlertTriangle, Edit } from 'lucide-react';
+import { Calculator, Ruler, TreePine, Camera, Loader2, AlertTriangle, Edit } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import BoundingBoxEditor from '@/components/BoundingBoxEditor';
 import { useToast } from '@/hooks/use-toast';
 import { API_CONFIG } from '@/config/api';
 import { z } from 'zod';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 // Schema validation for tree analysis API response
 const TreeAnalysisSchema = z.object({
@@ -393,19 +394,10 @@ const MeasurementScreen = () => {
             Tính toán kết quả
           </Button>
         </form>
-
-        <div className="mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/chat')}
-            className="w-full gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Cần hướng dẫn đo cây?
-          </Button>
-        </div>
       </div>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 };

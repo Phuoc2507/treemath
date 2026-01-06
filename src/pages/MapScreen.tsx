@@ -3,6 +3,7 @@ import { useMeasurementStore } from '@/store/measurementStore';
 import { getBackendClient } from '@/lib/backend/client';
 import { useEffect, useState, useMemo } from 'react';
 import { TreeData } from '@/lib/calculations';
+import FloatingChatButton from '@/components/FloatingChatButton';
 
 interface MasterTree {
   id: number;
@@ -199,6 +200,9 @@ const MapScreen = () => {
           <span>Đã chọn</span>
         </div>
       </div>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
     </div>
   );
 };
