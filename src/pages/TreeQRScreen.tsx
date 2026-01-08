@@ -131,6 +131,21 @@ const TreeQRScreen = () => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  // Format CO2 display: convert to tons if >= 1000 kg
+  const formatCO2Display = (co2Kg: number): { value: string; unit: string } => {
+    if (co2Kg >= 1000) {
+      const tons = co2Kg / 1000;
+      const formatted = Number.isInteger(tons) 
+        ? tons.toString() 
+        : tons.toFixed(2).replace('.', ',');
+      return { value: formatted, unit: 'tấn CO₂' };
+    }
+    const formatted = Number.isInteger(co2Kg) 
+      ? co2Kg.toString() 
+      : co2Kg.toFixed(1).replace('.', ',');
+    return { value: formatted, unit: 'kg CO₂' };
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-forest/10 to-background flex flex-col relative overflow-hidden">
       <FallingLeaves />
@@ -177,10 +192,12 @@ const TreeQRScreen = () => {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="stat-highlight">
               <span className="text-4xl font-extrabold text-primary text-glow">
-                {treeCO2 !== null ? treeCO2.toString().replace('.', ',') : '...'}
+                {treeCO2 !== null ? formatCO2Display(treeCO2).value : '...'}
               </span>
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-foreground">kg CO₂</span>
+                <span className="text-lg font-bold text-foreground">
+                  {treeCO2 !== null ? formatCO2Display(treeCO2).unit : 'kg CO₂'}
+                </span>
                 <span className="text-sm text-muted-foreground">đã hấp thụ</span>
               </div>
             </div>
@@ -198,7 +215,7 @@ const TreeQRScreen = () => {
           {treeCO2 !== null && (
             <div className="mt-4 pt-4 border-t border-primary/20 text-center">
               <p className="text-xl font-bold text-primary">
-                🌿 Đã hấp thụ <span className="text-2xl">{treeCO2.toString().replace('.', ',')}</span> kg CO₂
+                🌿 Đã hấp thụ <span className="text-2xl">{formatCO2Display(treeCO2).value}</span> {formatCO2Display(treeCO2).unit}
               </p>
             </div>
           )}
