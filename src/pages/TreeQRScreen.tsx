@@ -4,7 +4,7 @@ import { getBackendClient } from "@/lib/backend/client";
 import { TreeDeciduous, ArrowRight } from "lucide-react";
 import FallingLeaves from "@/components/FallingLeaves";
 import FloatingChatButton from "@/components/FloatingChatButton";
-import { calculateBiomass, calculateCO2Absorbed } from "@/lib/calculations";
+import { calculateBiomass, calculateCO2Absorbed, getCO2Equivalents } from "@/lib/calculations";
 
 interface LeaderboardEntry {
   id: string;
@@ -211,12 +211,24 @@ const TreeQRScreen = () => {
             )}
           </p>
           
-          {/* CO2 absorbed highlight */}
+          {/* CO2 equivalents */}
           {treeCO2 !== null && (
-            <div className="mt-4 pt-4 border-t border-primary/20 text-center">
-              <p className="text-xl font-bold text-primary">
-                🌿 Đã hấp thụ <span className="text-2xl">{formatCO2Display(treeCO2).value}</span> {formatCO2Display(treeCO2).unit}
-              </p>
+            <div className="mt-4 pt-4 border-t border-primary/20">
+              <p className="text-center text-sm text-muted-foreground mb-3">Tương đương với:</p>
+              <ul className="space-y-2 text-left">
+                <li className="flex items-center gap-2 text-foreground">
+                  <span>🚗</span>
+                  <span><strong>{getCO2Equivalents(treeCO2).carDays.toLocaleString('vi-VN')}</strong> ngày khí thải xe hơi</span>
+                </li>
+                <li className="flex items-center gap-2 text-foreground">
+                  <span>📱</span>
+                  <span><strong>{getCO2Equivalents(treeCO2).phoneCharges.toLocaleString('vi-VN')}</strong> lần sạc điện thoại</span>
+                </li>
+                <li className="flex items-center gap-2 text-foreground">
+                  <span>♻️</span>
+                  <span><strong>{getCO2Equivalents(treeCO2).plasticBottles.toLocaleString('vi-VN')}</strong> chai nhựa sản xuất</span>
+                </li>
+              </ul>
             </div>
           )}
         </div>
