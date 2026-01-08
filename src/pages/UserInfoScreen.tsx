@@ -75,7 +75,7 @@ const UserInfoScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center p-3 sm:p-4">
       {/* Falling leaves background */}
       <FallingLeaves />
 
@@ -92,27 +92,27 @@ const UserInfoScreen = () => {
 
       {/* Glass card form */}
       <motion.div
-        className="glass-card p-6 md:p-8 w-full max-w-md relative z-10"
+        className="glass-card p-5 sm:p-6 md:p-8 w-full max-w-md relative z-10"
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-5 sm:mb-6">
           <motion.div
-            className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 
+            className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-primary/20 
                        flex items-center justify-center border border-primary/30"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
           >
-            <User className="w-8 h-8 text-primary" />
+            <User className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
           </motion.div>
           
-          <h1 className="text-2xl font-bold text-foreground">Thông Tin Của Bạn</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Thông Tin Của Bạn</h1>
           
           {selectedTree && (
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-1.5 sm:mt-2 text-sm sm:text-base">
               Đo cây số <span className="text-primary font-semibold">{selectedTree.treeNumber}</span>
               {' - '}{selectedTree.species}
             </p>
@@ -120,9 +120,9 @@ const UserInfoScreen = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-foreground flex items-center gap-2">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="name" className="text-foreground flex items-center gap-2 text-sm sm:text-base">
               <User className="w-4 h-4" />
               Họ và tên
             </Label>
@@ -137,15 +137,15 @@ const UserInfoScreen = () => {
                 setErrors((prev) => ({ ...prev, name: undefined }));
               }}
               className="bg-input/50 border-border/50 focus:border-primary 
-                         text-foreground placeholder:text-muted-foreground"
+                         text-foreground placeholder:text-muted-foreground h-10 sm:h-11 text-sm sm:text-base"
             />
             {errors.name && (
-              <p className="text-destructive text-sm">{errors.name}</p>
+              <p className="text-destructive text-xs sm:text-sm">{errors.name}</p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="class" className="text-foreground flex items-center gap-2">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="class" className="text-foreground flex items-center gap-2 text-sm sm:text-base">
               <School className="w-4 h-4" />
               Lớp
             </Label>
@@ -160,20 +160,20 @@ const UserInfoScreen = () => {
                 setErrors((prev) => ({ ...prev, className: undefined }));
               }}
               className="bg-input/50 border-border/50 focus:border-primary 
-                         text-foreground placeholder:text-muted-foreground"
+                         text-foreground placeholder:text-muted-foreground h-10 sm:h-11 text-sm sm:text-base"
             />
             {errors.className && (
-              <p className="text-destructive text-sm">{errors.className}</p>
+              <p className="text-destructive text-xs sm:text-sm">{errors.className}</p>
             )}
           </div>
 
           <Button
             type="submit"
-            className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 
+            className="w-full h-11 sm:h-12 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 
                        text-primary-foreground glow-primary transition-all duration-300"
           >
             Tiếp tục
-            <ArrowRight className="w-5 h-5 ml-2" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
           </Button>
         </form>
       </motion.div>
