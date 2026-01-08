@@ -121,7 +121,7 @@ const LeaderboardScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-3 sm:p-4">
       <motion.div
         className="max-w-lg mx-auto"
         initial={{ opacity: 0 }}
@@ -129,20 +129,20 @@ const LeaderboardScreen = () => {
       >
         {/* Header */}
         <motion.div
-          className="text-center mb-6"
+          className="text-center mb-4 sm:mb-6"
           initial={{ y: -20 }}
           animate={{ y: 0 }}
         >
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/20 
+          <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gold/20 
                           flex items-center justify-center border border-gold/30">
-            <Trophy className="w-8 h-8 text-gold" />
+            <Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-gold" />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
             Bảng Xếp Hạng
           </h1>
           
           {/* Tree selector */}
-          <div className="flex items-center justify-center gap-4 mt-3">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 sm:mt-3">
             <Button
               variant="ghost"
               size="icon"
@@ -156,8 +156,8 @@ const LeaderboardScreen = () => {
               <ChevronLeft className="w-5 h-5" />
             </Button>
             
-            <div className="px-4 py-2 bg-primary/20 rounded-lg border border-primary/30 min-w-[120px]">
-              <span className="text-lg font-bold text-primary">Cây số {currentTree}</span>
+            <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/20 rounded-lg border border-primary/30 min-w-[100px] sm:min-w-[120px]">
+              <span className="text-base sm:text-lg font-bold text-primary">Cây số {currentTree}</span>
             </div>
             
             <Button
@@ -174,10 +174,10 @@ const LeaderboardScreen = () => {
             </Button>
           </div>
           
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-muted-foreground mt-1.5 sm:mt-2 text-xs sm:text-sm">
             Top 10 độ chính xác cao nhất
           </p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Trở về màn hình chờ sau {countdown}s
           </p>
         </motion.div>

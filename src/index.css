@@ -91,6 +91,22 @@
     @apply border-border;
   }
 
+  html {
+    font-size: 16px;
+    
+    @media (max-width: 360px) {
+      font-size: 14px;
+    }
+    
+    @media (min-width: 768px) {
+      font-size: 17px;
+    }
+    
+    @media (min-width: 1024px) {
+      font-size: 18px;
+    }
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Nunito', sans-serif;

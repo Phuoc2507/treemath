@@ -193,13 +193,13 @@ const ResultsScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-950 via-green-900/80 to-background p-4 overflow-auto">
+    <div className="min-h-screen bg-gradient-to-b from-green-950 via-green-900/80 to-background p-3 sm:p-4 overflow-auto">
       <div className="max-w-5xl mx-auto">
         {/* Countdown timer */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center text-sm text-muted-foreground mb-4"
+          className="text-center text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4"
         >
           Chuyển sang bảng xếp hạng sau {countdown}s
         </motion.div>
@@ -210,50 +210,50 @@ const ResultsScreen = () => {
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-center mb-6"
+          className="text-center mb-4 sm:mb-6"
         >
-          <h1 className="text-2xl md:text-4xl font-bold text-foreground drop-shadow-lg">
+          <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-foreground drop-shadow-lg">
             🌳 Kết Quả Đo Đạc
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
+          <p className="text-muted-foreground mt-1.5 sm:mt-2 text-sm sm:text-lg">
             Cây số {displayTree.treeNumber} - {displayTree.species}
           </p>
         </motion.div>
 
         {/* Main content - Responsive grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Left column */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Measurement results */}
             <motion.div 
               variants={scaleIn}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.8, delay: 0.8 }}
-              className="glass-card p-6 glow-primary"
+              className="glass-card p-4 sm:p-6 glow-primary"
             >
-              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Ruler className="w-5 h-5 text-primary" />
+              <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 flex items-center gap-2">
+                <Ruler className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 Kết Quả Đo
               </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-primary/20 rounded-xl border border-primary/30">
-                  <Ruler className="w-8 h-8 mx-auto mb-2 text-primary" />
-                  <p className="text-sm text-muted-foreground">Chiều cao</p>
-                  <p className="text-3xl font-bold text-primary">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="text-center p-3 sm:p-4 bg-primary/20 rounded-xl border border-primary/30">
+                  <Ruler className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 sm:mb-2 text-primary" />
+                  <p className="text-xs sm:text-sm text-muted-foreground">Chiều cao</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">
                     <AnimatedNumber value={displayResult.calculatedHeight} suffix="m" />
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">
                     Thực tế: {displayTree.actualHeight}m
                   </p>
                 </div>
-                <div className="text-center p-4 bg-accent/20 rounded-xl border border-accent/30">
-                  <Circle className="w-8 h-8 mx-auto mb-2 text-accent" />
-                  <p className="text-sm text-muted-foreground">Đường kính</p>
-                  <p className="text-3xl font-bold text-accent">
+                <div className="text-center p-3 sm:p-4 bg-accent/20 rounded-xl border border-accent/30">
+                  <Circle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 sm:mb-2 text-accent" />
+                  <p className="text-xs sm:text-sm text-muted-foreground">Đường kính</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-accent">
                     <AnimatedNumber value={displayResult.calculatedDiameter} suffix="cm" />
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">
                     Thực tế: {displayTree.actualDiameter}cm
                   </p>
                 </div>
@@ -266,25 +266,25 @@ const ResultsScreen = () => {
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.8, delay: 1.4 }}
-              className="glass-card p-6"
+              className="glass-card p-4 sm:p-6"
             >
-              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                <TreePine className="w-5 h-5 text-primary" />
+              <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 flex items-center gap-2">
+                <TreePine className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 Sinh Khối & CO₂
               </h2>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl border border-primary/30">
-                  <TreePine className="w-10 h-10 mx-auto mb-2 text-primary" />
-                  <p className="text-sm text-muted-foreground">Sinh khối</p>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="text-center p-3 sm:p-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl border border-primary/30">
+                  <TreePine className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1.5 sm:mb-2 text-primary" />
+                  <p className="text-xs sm:text-sm text-muted-foreground">Sinh khối</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
                     <AnimatedNumber value={displayResult.biomassKg} suffix=" kg" />
                   </p>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-accent/20 to-accent/5 rounded-xl border border-accent/30">
-                  <Cloud className="w-10 h-10 mx-auto mb-2 text-accent" />
-                  <p className="text-sm text-muted-foreground">CO₂ hấp thụ</p>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground">
+                <div className="text-center p-3 sm:p-4 bg-gradient-to-br from-accent/20 to-accent/5 rounded-xl border border-accent/30">
+                  <Cloud className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1.5 sm:mb-2 text-accent" />
+                  <p className="text-xs sm:text-sm text-muted-foreground">CO₂ hấp thụ</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
                     <AnimatedNumber value={displayResult.co2AbsorbedKg} suffix=" kg" />
                   </p>
                 </div>
@@ -298,10 +298,10 @@ const ResultsScreen = () => {
             initial="hidden"
             animate="visible"
             transition={{ duration: 0.8, delay: 2.0 }}
-            className="rounded-2xl bg-gradient-to-br from-primary/15 via-accent/10 to-primary/5 p-6 border border-primary/30 h-fit lg:h-full glow-primary"
+            className="rounded-2xl bg-gradient-to-br from-primary/15 via-accent/10 to-primary/5 p-4 sm:p-6 border border-primary/30 h-fit lg:h-full glow-primary"
           >
-            <h2 className="text-xl font-bold text-primary mb-5 flex items-center gap-2">
-              <Recycle className="w-6 h-6" />
+            <h2 className="text-lg sm:text-xl font-bold text-primary mb-4 sm:mb-5 flex items-center gap-2">
+              <Recycle className="w-5 h-5 sm:w-6 sm:h-6" />
               Quy Đổi Tương Đương
             </h2>
             
@@ -309,50 +309,50 @@ const ResultsScreen = () => {
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              className="space-y-4"
+              className="space-y-3 sm:space-y-4"
             >
               <motion.div 
                 variants={fadeInUp}
-                className="flex items-center gap-4 p-4 bg-background/80 rounded-xl border border-border transition-all hover:translate-x-2 hover:shadow-lg hover:shadow-orange-500/20"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-background/80 rounded-xl border border-border transition-all hover:translate-x-2 hover:shadow-lg hover:shadow-orange-500/20"
               >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
-                  <Car className="w-8 h-8 text-white" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-500/30 flex-shrink-0">
+                  <Car className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-3xl font-bold text-foreground">
-                    <AnimatedNumber value={equivalents.carDays} /> <span className="text-lg font-medium">ngày</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedNumber value={equivalents.carDays} /> <span className="text-sm sm:text-lg font-medium">ngày</span>
                   </p>
-                  <p className="text-sm text-muted-foreground">khí thải xe hơi được bù đắp</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">khí thải xe hơi được bù đắp</p>
                 </div>
               </motion.div>
               
               <motion.div 
                 variants={fadeInUp}
-                className="flex items-center gap-4 p-4 bg-background/80 rounded-xl border border-border transition-all hover:translate-x-2 hover:shadow-lg hover:shadow-blue-500/20"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-background/80 rounded-xl border border-border transition-all hover:translate-x-2 hover:shadow-lg hover:shadow-blue-500/20"
               >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <Smartphone className="w-8 h-8 text-white" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0">
+                  <Smartphone className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-3xl font-bold text-foreground">
-                    <AnimatedNumber value={equivalents.phoneCharges} /> <span className="text-lg font-medium">lần</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedNumber value={equivalents.phoneCharges} /> <span className="text-sm sm:text-lg font-medium">lần</span>
                   </p>
-                  <p className="text-sm text-muted-foreground">sạc điện thoại tương đương</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">sạc điện thoại tương đương</p>
                 </div>
               </motion.div>
               
               <motion.div 
                 variants={fadeInUp}
-                className="flex items-center gap-4 p-4 bg-background/80 rounded-xl border border-border transition-all hover:translate-x-2 hover:shadow-lg hover:shadow-emerald-500/20"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-background/80 rounded-xl border border-border transition-all hover:translate-x-2 hover:shadow-lg hover:shadow-emerald-500/20"
               >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                  <Recycle className="w-8 h-8 text-white" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 flex-shrink-0">
+                  <Recycle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-3xl font-bold text-foreground">
-                    <AnimatedNumber value={equivalents.plasticBottles} /> <span className="text-lg font-medium">chai</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedNumber value={equivalents.plasticBottles} /> <span className="text-sm sm:text-lg font-medium">chai</span>
                   </p>
-                  <p className="text-sm text-muted-foreground">nhựa sản xuất được bù trừ</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">nhựa sản xuất được bù trừ</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -365,20 +365,20 @@ const ResultsScreen = () => {
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.8, delay: 3.2 }}
-          className="flex flex-col sm:flex-row gap-4 mt-8 max-w-lg mx-auto lg:max-w-none"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 max-w-lg mx-auto lg:max-w-none"
         >
           <Button
             onClick={handleViewLeaderboard}
-            className="flex-1 h-14 bg-gold hover:bg-gold/90 text-background font-semibold text-lg shadow-lg shadow-gold/30"
+            className="flex-1 h-12 sm:h-14 bg-gold hover:bg-gold/90 text-background font-semibold text-base sm:text-lg shadow-lg shadow-gold/30"
           >
-            <Trophy className="w-6 h-6 mr-2" />
+            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
             Bảng xếp hạng
           </Button>
           
           <Button
             onClick={handlePlayAgain}
             variant="outline"
-            className="flex-1 h-14 border-2 border-primary text-primary hover:bg-primary/10 font-semibold text-lg"
+            className="flex-1 h-12 sm:h-14 border-2 border-primary text-primary hover:bg-primary/10 font-semibold text-base sm:text-lg"
           >
             🌲 Đo cây khác
           </Button>

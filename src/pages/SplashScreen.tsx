@@ -48,11 +48,11 @@ const SplashScreen = () => {
         transition={{ duration: 0.4 }}
       >
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 text-center">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1.5 sm:mb-2 text-center">
           ĐO ĐẠC CÂY XANH
         </h1>
 
-        <p className="text-muted-foreground text-lg mb-8 text-center">
+        <p className="text-muted-foreground text-base sm:text-lg mb-6 sm:mb-8 text-center">
           Chạm vào vòng tròn ở giữa để bắt đầu
         </p>
 

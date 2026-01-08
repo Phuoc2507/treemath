@@ -50,7 +50,7 @@ const CongratsScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-3 sm:p-4 relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent" />
 
@@ -62,7 +62,7 @@ const CongratsScreen = () => {
       >
         {/* Star icon */}
         <motion.div
-          className="w-24 h-24 mx-auto mb-6 rounded-full bg-gold/20 
+          className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full bg-gold/20 
                      flex items-center justify-center border-2 border-gold/50"
           animate={{
             scale: [1, 1.1, 1],
@@ -73,12 +73,12 @@ const CongratsScreen = () => {
             repeat: Infinity,
           }}
         >
-          <Sparkles className="w-12 h-12 text-gold" />
+          <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-gold" />
         </motion.div>
 
         {/* Congratulations text */}
         <motion.h1
-          className="text-3xl md:text-4xl font-bold text-foreground mb-2"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1.5 sm:mb-2"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -87,7 +87,7 @@ const CongratsScreen = () => {
         </motion.h1>
 
         <motion.p
-          className="text-lg text-muted-foreground mb-8"
+          className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -97,14 +97,14 @@ const CongratsScreen = () => {
 
         {/* Accuracy score */}
         <motion.div
-          className="glass-card p-8 mb-8"
+          className="glass-card p-6 sm:p-8 mb-6 sm:mb-8"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <p className="text-muted-foreground mb-2">Độ chính xác của bạn</p>
+          <p className="text-muted-foreground mb-1.5 sm:mb-2 text-sm sm:text-base">Độ chính xác của bạn</p>
           <motion.p
-            className={`text-6xl md:text-7xl font-bold ${getAccuracyColor(displayResult.overallAccuracy)}`}
+            className={`text-5xl sm:text-6xl md:text-7xl font-bold ${getAccuracyColor(displayResult.overallAccuracy)}`}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
@@ -112,7 +112,7 @@ const CongratsScreen = () => {
             {displayResult.overallAccuracy}%
           </motion.p>
           
-          <div className="flex justify-center gap-8 mt-6 text-sm">
+          <div className="flex justify-center gap-6 sm:gap-8 mt-4 sm:mt-6 text-xs sm:text-sm">
             <div>
               <p className="text-muted-foreground">Chiều cao</p>
               <p className="text-foreground font-semibold">{displayResult.heightAccuracy}%</p>
@@ -132,11 +132,11 @@ const CongratsScreen = () => {
         >
           <Button
             onClick={() => navigate('/results')}
-            className="h-12 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 
+            className="h-11 sm:h-12 px-6 sm:px-8 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 
                        text-primary-foreground glow-primary"
           >
             Xem kết quả chi tiết
-            <ArrowRight className="w-5 h-5 ml-2" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
           </Button>
         </motion.div>
       </motion.div>

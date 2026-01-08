@@ -242,7 +242,7 @@ const MeasurementScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
       {showEditor && previewUrl && boundingBoxes.tree && boundingBoxes.person && (
         <BoundingBoxEditor
           imageSrc={previewUrl}
@@ -269,14 +269,14 @@ const MeasurementScreen = () => {
         />
       )}
 
-      <div className="glass-card p-6 md:p-8 w-full max-w-md animate-fade-in">
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 animate-scale-in">
-            <Ruler className="w-8 h-8 text-primary" />
+      <div className="glass-card p-5 sm:p-6 md:p-8 w-full max-w-md animate-fade-in">
+        <div className="text-center mb-5 sm:mb-6">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 animate-scale-in">
+            <Ruler className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Nhập Dữ Liệu Đo</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Nhập Dữ Liệu Đo</h1>
           {selectedTree && (
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-1.5 sm:mt-2 text-sm sm:text-base">
               Cây số <span className="text-primary font-semibold">{selectedTree.treeNumber}</span>
               {' - '}{selectedTree.species}
             </p>
@@ -284,41 +284,41 @@ const MeasurementScreen = () => {
         </div>
 
         {/* AI Measurement Section */}
-        <Card className="mb-6 bg-muted/30 border-border/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Camera className="w-5 h-5 text-primary" />
+        <Card className="mb-5 sm:mb-6 bg-muted/30 border-border/50">
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               AI đo cây giúp bạn
             </CardTitle>
-            <CardDescription>Lưu ý AI có thể mắc sai sót, điều chỉnh trước khi gửi</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Lưu ý AI có thể mắc sai sót, điều chỉnh trước khi gửi</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="image-upload">Chọn ảnh</Label>
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0 sm:pt-0">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="image-upload" className="text-sm sm:text-base">Chọn ảnh</Label>
               <Input
                 id="image-upload"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                className="file:text-primary-foreground"
+                className="file:text-primary-foreground text-sm sm:text-base"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="person-height">Chiều cao người tham chiếu (cm)</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="person-height" className="text-sm sm:text-base">Chiều cao người tham chiếu (cm)</Label>
               <Input
                 id="person-height"
                 type="number"
                 value={personHeight}
                 onChange={(e) => setPersonHeight(e.target.value)}
                 placeholder="VD: 170"
-                className="bg-background border-input"
+                className="bg-background border-input h-10 sm:h-11 text-sm sm:text-base"
               />
               <p className="text-xs text-muted-foreground">Nhập chính xác để AI tính toán chuẩn hơn.</p>
             </div>
             {apiError && (
-              <div className="flex items-center gap-2 text-destructive text-sm p-2 bg-destructive/10 rounded-md">
-                <AlertTriangle className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-destructive text-xs sm:text-sm p-2 bg-destructive/10 rounded-md">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                 <p>{apiError}</p>
               </div>
             )}
@@ -326,12 +326,12 @@ const MeasurementScreen = () => {
               <Button
                 onClick={handleImageAnalysis}
                 disabled={isLoading || !imageFile}
-                className="flex-1"
+                className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
               >
                 {isLoading ? (
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
                 ) : (
-                  <TreePine className="w-5 h-5 mr-2" />
+                  <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 )}
                 {isLoading ? 'Đang phân tích...' : 'Phân tích ảnh'}
               </Button>
@@ -340,10 +340,10 @@ const MeasurementScreen = () => {
                 <Button
                   variant="outline"
                   onClick={() => setShowEditor(true)}
-                  className="w-12 px-0"
+                  className="w-10 sm:w-12 px-0"
                   title="Chỉnh sửa vùng đo"
                 >
-                  <Edit className="w-5 h-5 text-primary" />
+                  <Edit className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 </Button>
               )}
             </div>
@@ -351,10 +351,10 @@ const MeasurementScreen = () => {
         </Card>
 
         {/* Manual Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="circumference" className="text-foreground flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs">C</div>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="circumference" className="text-foreground flex items-center gap-2 text-sm sm:text-base">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-current flex items-center justify-center text-xs">C</div>
               Chu vi thân cây (cm)
             </Label>
             <Input
@@ -364,14 +364,14 @@ const MeasurementScreen = () => {
               placeholder="Ví dụ: 120"
               value={formData.circumference}
               onChange={(e) => handleChange('circumference', e.target.value)}
-              className="bg-input/50 border-border/50 focus:border-primary text-foreground placeholder:text-muted-foreground"
+              className="bg-input/50 border-border/50 focus:border-primary text-foreground placeholder:text-muted-foreground h-10 sm:h-11 text-sm sm:text-base"
             />
-            {errors.circumference && <p className="text-destructive text-sm">{errors.circumference}</p>}
+            {errors.circumference && <p className="text-destructive text-xs sm:text-sm">{errors.circumference}</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="height" className="text-foreground flex items-center gap-2">
-              <TreePine className="w-5 h-5" />
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="height" className="text-foreground flex items-center gap-2 text-sm sm:text-base">
+              <TreePine className="w-4 h-4 sm:w-5 sm:h-5" />
               Chiều cao cây (m)
             </Label>
             <Input
@@ -381,16 +381,16 @@ const MeasurementScreen = () => {
               placeholder="Ví dụ: 12.5"
               value={formData.height}
               onChange={(e) => handleChange('height', e.target.value)}
-              className="bg-input/50 border-border/50 focus:border-primary text-foreground placeholder:text-muted-foreground"
+              className="bg-input/50 border-border/50 focus:border-primary text-foreground placeholder:text-muted-foreground h-10 sm:h-11 text-sm sm:text-base"
             />
-            {errors.height && <p className="text-destructive text-sm">{errors.height}</p>}
+            {errors.height && <p className="text-destructive text-xs sm:text-sm">{errors.height}</p>}
           </div>
 
           <Button
             type="submit"
-            className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground glow-primary transition-all duration-300"
+            className="w-full h-11 sm:h-12 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground glow-primary transition-all duration-300"
           >
-            <Calculator className="w-5 h-5 mr-2" />
+            <Calculator className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
             Tính toán kết quả
           </Button>
         </form>
