@@ -47,8 +47,13 @@ const FloatingChatButton = () => {
       >
         <MessageCircle className="w-6 h-6 text-primary-foreground" />
         
-        {/* Pulse animation */}
-        <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+        {/* Subtle pulse ring - only animate once */}
+        <motion.span 
+          className="absolute inset-0 rounded-full bg-primary/20"
+          initial={{ scale: 1, opacity: 0.5 }}
+          animate={{ scale: 1.3, opacity: 0 }}
+          transition={{ duration: 1.5, delay: 1 }}
+        />
       </motion.button>
     </div>
   );
