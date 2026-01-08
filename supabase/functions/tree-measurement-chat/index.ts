@@ -1,21 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Trusted origins for CORS
-const ALLOWED_ORIGINS = [
-  'https://treemath.lovable.app',
-  'https://vijsarilxqwghzyaygcm.lovable.app',
-  'https://vijsarilxqwghzyaygcm.supabase.co',
-  'http://localhost:5173',
-  'http://localhost:3000',
-];
-
-const getCorsHeaders = (origin: string) => {
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
+// CORS headers - allow all origins for flexibility
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 // Rate limiting configuration
@@ -121,10 +110,10 @@ async function checkRateLimit(clientIp: string): Promise<{ allowed: boolean; cur
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin') || '';
-  const corsHeaders = getCorsHeaders(origin);
-
   // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -135,7 +124,7 @@ serve(async (req) => {
                      req.headers.get('x-real-ip') || 
                      'unknown';
     
-    console.log(`[tree-measurement-chat] Request from IP: ${clientIp}, Origin: ${origin}`);
+    console.log(`[tree-measurement-chat] Request from IP: ${clientIp}`);
     
     // Check rate limit
     const { allowed, currentCount } = await checkRateLimit(clientIp);
