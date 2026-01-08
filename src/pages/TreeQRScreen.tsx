@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBackendClient } from "@/lib/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { TreeDeciduous, ArrowRight } from "lucide-react";
 import FallingLeaves from "@/components/FallingLeaves";
 import FloatingChatButton from "@/components/FloatingChatButton";
+import { calculateBiomass, calculateCO2Absorbed } from "@/lib/calculations";
 
 interface LeaderboardEntry {
   id: string;
@@ -30,6 +32,10 @@ const TreeQRScreen = () => {
   // Leaderboard data
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+  
+  // Tree CO2 data
+  const [treeCO2, setTreeCO2] = useState<number | null>(null);
+  const [treeSpecies, setTreeSpecies] = useState<string | null>(null);
 
   // Typewriter effect - optimized with RAF
   useEffect(() => {
@@ -63,6 +69,26 @@ const TreeQRScreen = () => {
       return () => clearTimeout(timer);
     }
   }, [showLeaderboard]);
+
+  // Fetch tree data for CO2 calculation
+  useEffect(() => {
+    const fetchTreeData = async () => {
+      const { data, error } = await supabase
+        .from('master_trees')
+        .select('actual_height, actual_diameter, species')
+        .eq('tree_number', treeNumber)
+        .single();
+      
+      if (!error && data && data.actual_height && data.actual_diameter) {
+        const biomass = calculateBiomass(data.actual_diameter, data.actual_height);
+        const co2 = calculateCO2Absorbed(biomass);
+        setTreeCO2(Math.round(co2 * 10) / 10);
+        setTreeSpecies(data.species);
+      }
+    };
+    
+    fetchTreeData();
+  }, [treeNumber]);
 
   // Fetch leaderboard data
   useEffect(() => {
@@ -138,13 +164,22 @@ const TreeQRScreen = () => {
       <div className="flex-1 px-5 flex flex-col relative z-10 overflow-y-auto">
         {/* CO2 Highlight Card */}
         <div className="glass-premium p-6 mb-6 animate-fade-in">
+          {/* Tree species */}
+          {treeSpecies && (
+            <p className="text-center text-muted-foreground text-base mb-3">
+              {treeSpecies}
+            </p>
+          )}
+          
           {/* Main stat highlight */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="stat-highlight">
-              <span className="text-4xl font-extrabold text-primary text-glow">20-50</span>
+              <span className="text-4xl font-extrabold text-primary text-glow">
+                {treeCO2 !== null ? treeCO2.toLocaleString('vi-VN') : '...'}
+              </span>
               <div className="flex flex-col">
                 <span className="text-lg font-bold text-foreground">kg CO₂</span>
-                <span className="text-sm text-muted-foreground">mỗi năm</span>
+                <span className="text-sm text-muted-foreground">đã hấp thụ</span>
               </div>
             </div>
           </div>
@@ -156,6 +191,15 @@ const TreeQRScreen = () => {
               <span className="animate-pulse text-primary ml-0.5">|</span>
             )}
           </p>
+          
+          {/* CO2 absorbed highlight */}
+          {treeCO2 !== null && (
+            <div className="mt-4 pt-4 border-t border-primary/20 text-center">
+              <p className="text-xl font-bold text-primary">
+                🌿 Đã hấp thụ <span className="text-2xl">{treeCO2.toLocaleString('vi-VN')}</span> kg CO₂
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Leaderboard */}
