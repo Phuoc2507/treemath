@@ -177,7 +177,7 @@ const TreeQRScreen = () => {
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="stat-highlight">
               <span className="text-4xl font-extrabold text-primary text-glow">
-                {treeCO2 !== null ? treeCO2.toLocaleString('vi-VN') : '...'}
+                {treeCO2 !== null ? treeCO2.toString().replace('.', ',') : '...'}
               </span>
               <div className="flex flex-col">
                 <span className="text-lg font-bold text-foreground">kg CO₂</span>
@@ -198,7 +198,7 @@ const TreeQRScreen = () => {
           {treeCO2 !== null && (
             <div className="mt-4 pt-4 border-t border-primary/20 text-center">
               <p className="text-xl font-bold text-primary">
-                🌿 Đã hấp thụ <span className="text-2xl">{treeCO2.toLocaleString('vi-VN')}</span> kg CO₂
+                🌿 Đã hấp thụ <span className="text-2xl">{treeCO2.toString().replace('.', ',')}</span> kg CO₂
               </p>
             </div>
           )}
