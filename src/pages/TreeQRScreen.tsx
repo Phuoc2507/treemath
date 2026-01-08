@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBackendClient } from "@/lib/backend/client";
-import { supabase } from "@/integrations/supabase/client";
 import { TreeDeciduous, ArrowRight } from "lucide-react";
 import FallingLeaves from "@/components/FallingLeaves";
 import FloatingChatButton from "@/components/FloatingChatButton";
@@ -73,7 +72,10 @@ const TreeQRScreen = () => {
   // Fetch tree data for CO2 calculation
   useEffect(() => {
     const fetchTreeData = async () => {
-      const { data, error } = await supabase
+      const backend = getBackendClient();
+      if (!backend) return;
+      
+      const { data, error } = await backend
         .from('master_trees')
         .select('actual_height, actual_diameter, species')
         .eq('tree_number', treeNumber)
