@@ -1,17 +1,25 @@
 // Centralized runtime config for the backend base URL/key.
-// Hardcoded values to ensure they're always available
+// Uses environment variables with fallbacks for reliability
 
-const SUPABASE_PROJECT_ID = "vijsarilxqwghzyaygcm";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpanNhcmlseHF3Z2h6eWF5Z2NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNTQ0MDAsImV4cCI6MjA4MTczMDQwMH0.ERDFx8HWNcWWzxGzglucpihqycL4rgIdMLMqGjfTZUY";
+// Fallback values for development/edge cases where env vars may not load
+const FALLBACK_URL = "https://vijsarilxqwghzyaygcm.supabase.co";
+const FALLBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpanNhcmlseHF3Z2h6eWF5Z2NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNTQ0MDAsImV4cCI6MjA4MTczMDQwMH0.ERDFx8HWNcWWzxGzglucpihqycL4rgIdMLMqGjfTZUY";
 
 export const getBackendBaseUrl = (): string => {
-  return `https://${SUPABASE_PROJECT_ID}.supabase.co`;
+  // Prefer environment variable for easy key rotation
+  const envUrl = import.meta.env.VITE_SUPABASE_URL;
+  return envUrl || FALLBACK_URL;
 };
 
 export const getBackendPublishableKey = (): string => {
-  return SUPABASE_ANON_KEY;
+  // Prefer environment variable for easy key rotation
+  const envKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  return envKey || FALLBACK_KEY;
 };
 
 export const isBackendConfigured = (): boolean => {
-  return true;
+  // Check if either env vars or fallbacks are available
+  const url = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
+  const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_KEY;
+  return !!(url && key);
 };
