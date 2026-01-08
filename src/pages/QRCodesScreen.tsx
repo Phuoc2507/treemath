@@ -51,19 +51,77 @@ const QRCodesScreen = () => {
     window.print();
   };
 
-  const downloadSingleQR = (treeNumber: number) => {
+  const downloadSingleQR = (treeNumber: number, species: string) => {
     const svg = document.getElementById(`qr-${treeNumber}`);
     if (!svg) return;
 
     const svgData = new XMLSerializer().serializeToString(svg);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
+    const qrImg = new Image();
 
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
+    qrImg.onload = () => {
+      const padding = 40;
+      const qrSize = 200;
+      const badgeHeight = 36;
+      const speciesHeight = 30;
+      const canvasWidth = qrSize + padding * 2;
+      const canvasHeight = badgeHeight + 20 + qrSize + 20 + speciesHeight + padding;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Dark background with rounded corners
+      ctx.fillStyle = "#1a1f1a";
+      ctx.beginPath();
+      ctx.roundRect(0, 0, canvasWidth, canvasHeight, 16);
+      ctx.fill();
+
+      // Border
+      ctx.strokeStyle = "#2d3b2d";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(1, 1, canvasWidth - 2, canvasHeight - 2, 16);
+      ctx.stroke();
+
+      // Green badge for tree number
+      const badgeText = `Cây số ${treeNumber}`;
+      ctx.font = "bold 14px sans-serif";
+      const badgeTextWidth = ctx.measureText(badgeText).width;
+      const badgeWidth = badgeTextWidth + 32;
+      const badgeX = (canvasWidth - badgeWidth) / 2;
+      const badgeY = 20;
+
+      ctx.fillStyle = "#22c55e";
+      ctx.beginPath();
+      ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 18);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(badgeText, canvasWidth / 2, badgeY + badgeHeight / 2);
+
+      // White background for QR
+      const qrX = (canvasWidth - qrSize) / 2;
+      const qrY = badgeY + badgeHeight + 20;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.roundRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 8);
+      ctx.fill();
+
+      // Draw QR code
+      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+
+      // Species name
+      const speciesText = species || "Chưa xác định";
+      ctx.font = "bold 16px sans-serif";
+      ctx.fillStyle = "#22c55e";
+      ctx.textAlign = "center";
+      ctx.fillText(speciesText, canvasWidth / 2, qrY + qrSize + 30);
+
+      // Download
       const pngFile = canvas.toDataURL("image/png");
       const downloadLink = document.createElement("a");
       downloadLink.download = `tree-${treeNumber}-qr.png`;
@@ -71,7 +129,7 @@ const QRCodesScreen = () => {
       downloadLink.click();
     };
 
-    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+    qrImg.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
   };
 
   return (
@@ -149,7 +207,7 @@ const QRCodesScreen = () => {
                   variant="ghost"
                   size="sm"
                   className="mt-3 print:hidden"
-                  onClick={() => downloadSingleQR(tree.tree_number)}
+                  onClick={() => downloadSingleQR(tree.tree_number, tree.species || "")}
                 >
                   <Download className="w-4 h-4 mr-1" />
                   Tải PNG
