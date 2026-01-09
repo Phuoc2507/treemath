@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMeasurementStore } from '@/store/measurementStore';
 import { getBackendClient } from '@/lib/backend/client';
-import { useEffect, useState, useMemo, forwardRef } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { TreeData } from '@/lib/calculations';
 import FloatingChatButton from '@/components/FloatingChatButton';
 
@@ -38,7 +38,7 @@ const treePositions: { [key: number]: { x: number; y: number } } = {
   17: { x: 85, y: 84 },
 };
 
-const MapScreen = forwardRef<HTMLDivElement>((_, ref) => {
+const MapScreen = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { setSelectedTree, selectedTreeId } = useMeasurementStore();
@@ -125,7 +125,7 @@ const MapScreen = forwardRef<HTMLDivElement>((_, ref) => {
   ), []);
 
   return (
-    <div ref={ref} className="min-h-screen bg-background p-4 flex flex-col">
+    <div className="min-h-screen bg-background p-4 flex flex-col">
       {/* Header */}
       <div className="text-center mb-6 animate-fade-in">
         <h1 className="text-2xl md:text-3xl font-bold text-foreground">
@@ -221,8 +221,6 @@ const MapScreen = forwardRef<HTMLDivElement>((_, ref) => {
       <FloatingChatButton />
     </div>
   );
-});
-
-MapScreen.displayName = 'MapScreen';
+};
 
 export default MapScreen;
