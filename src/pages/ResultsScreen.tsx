@@ -234,7 +234,7 @@ const ResultsScreen = () => {
             >
               <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 flex items-center gap-2">
                 <Ruler className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                Kết Quả Đo
+                Kết Quả Đo Của Bạn
               </h2>
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="text-center p-3 sm:p-4 bg-primary/20 rounded-xl border border-primary/30">
