@@ -151,10 +151,10 @@ const MapScreen = () => {
 
           {/* Stage - between trees 6 and 9, at the very top edge */}
           <div 
-            className="absolute w-28 h-12 bg-accent/30 rounded-b border border-t-0 border-accent/50 flex items-center justify-center"
+            className="absolute w-36 h-14 bg-accent/40 rounded-b border border-t-0 border-accent/60 flex items-center justify-center"
             style={{ left: '50%', top: '0', transform: 'translateX(-50%)' }}
           >
-            <span className="text-xs text-accent-foreground/70 font-medium">SÂN KHẤU</span>
+            <span className="text-sm text-foreground font-semibold">SÂN KHẤU</span>
           </div>
 
           {/* Tree markers - using CSS transitions instead of Framer Motion */}
