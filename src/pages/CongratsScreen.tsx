@@ -105,6 +105,7 @@ const CongratsScreen = () => {
             transition={{ delay: 0.35, type: "spring", stiffness: 200 }}
           >
             <p className="text-gold font-bold text-base sm:text-lg text-glow-gold">
+              🎁 Chúc mừng! Hãy đến GIAN HÀNG TOÁN - ANH để nhận quà!
               🎁 Chúc mừng! Hãy đến GIAN HÀNG để nhận quà!
             </p>
           </motion.div>
