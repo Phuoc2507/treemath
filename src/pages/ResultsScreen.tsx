@@ -243,18 +243,12 @@ const ResultsScreen = () => {
                   <p className="text-2xl sm:text-3xl font-bold text-primary">
                     <AnimatedNumber value={displayResult.calculatedHeight} suffix="m" />
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                    Thực tế: {displayTree.actualHeight}m
-                  </p>
                 </div>
                 <div className="text-center p-3 sm:p-4 bg-accent/20 rounded-xl border border-accent/30">
                   <Circle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 sm:mb-2 text-accent" />
                   <p className="text-xs sm:text-sm text-muted-foreground">Đường kính</p>
                   <p className="text-2xl sm:text-3xl font-bold text-accent">
                     <AnimatedNumber value={displayResult.calculatedDiameter} suffix="cm" />
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">
-                    Thực tế: {displayTree.actualDiameter}cm
                   </p>
                 </div>
               </div>
