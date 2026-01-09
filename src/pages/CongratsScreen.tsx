@@ -87,13 +87,28 @@ const CongratsScreen = () => {
         </motion.h1>
 
         <motion.p
-          className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8"
+          className="text-base sm:text-lg text-muted-foreground mb-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
           {getAccuracyMessage(displayResult.overallAccuracy)}
         </motion.p>
+
+        {/* Gift notification for high accuracy - positioned prominently */}
+        {displayResult.overallAccuracy >= 80 && (
+          <motion.div
+            className="mb-6 sm:mb-8 p-4 sm:p-5 bg-gradient-to-r from-gold/30 via-gold/20 to-gold/30 
+                       border-2 border-gold rounded-2xl shadow-lg glow-gold"
+            initial={{ y: 20, opacity: 0, scale: 0.9 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            transition={{ delay: 0.35, type: "spring", stiffness: 200 }}
+          >
+            <p className="text-gold font-bold text-base sm:text-lg text-glow-gold">
+              🎁 Chúc mừng! Hãy đến GIAN HÀNG để nhận quà!
+            </p>
+          </motion.div>
+        )}
 
         {/* Accuracy score */}
         <motion.div
@@ -123,20 +138,6 @@ const CongratsScreen = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Gift notification for high accuracy */}
-        {displayResult.overallAccuracy >= 80 && (
-          <motion.div
-            className="mt-4 sm:mt-6 p-4 bg-gold/20 border border-gold/50 rounded-xl"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <p className="text-gold font-semibold text-sm sm:text-base">
-              🎁 Chúc mừng! Hãy đến GIAN HÀNG để nhận quà!
-            </p>
-          </motion.div>
-        )}
 
         {/* Continue button */}
         <motion.div
