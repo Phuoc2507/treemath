@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X } from 'lucide-react';
 
-const FloatingChatButton = () => {
+const FloatingChatButton = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showTooltip, setShowTooltip] = useState(false);
@@ -16,7 +16,7 @@ const FloatingChatButton = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div ref={ref} className="fixed bottom-6 right-6 z-50">
       <AnimatePresence>
         {showTooltip && (
           <motion.div
@@ -57,6 +57,8 @@ const FloatingChatButton = () => {
       </motion.button>
     </div>
   );
-};
+});
+
+FloatingChatButton.displayName = 'FloatingChatButton';
 
 export default FloatingChatButton;
