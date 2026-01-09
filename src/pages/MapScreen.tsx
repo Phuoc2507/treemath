@@ -159,7 +159,7 @@ const MapScreen = () => {
 
           {/* Booth - between trees 5 and 8, at the very bottom edge */}
           <div 
-            className="absolute w-36 h-14 bg-secondary/40 rounded-t border border-b-0 border-secondary/60 flex items-center justify-center"
+            className="absolute w-36 h-14 bg-primary/50 rounded-t border border-b-0 border-primary/70 flex items-center justify-center"
             style={{ left: '26.5%', bottom: '0', transform: 'translateX(-50%)' }}
           >
             <span className="text-sm text-foreground font-semibold">GIAN HÀNG</span>
