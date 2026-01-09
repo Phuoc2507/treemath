@@ -149,6 +149,14 @@ const MapScreen = () => {
             <span className="text-xs text-muted-foreground">TRƯỜNG HỌC</span>
           </div>
 
+          {/* Stage - between trees 6 and 9, at the top edge */}
+          <div 
+            className="absolute w-20 h-10 bg-accent/30 rounded border border-accent/50 flex items-center justify-center"
+            style={{ left: '50%', top: '6%', transform: 'translateX(-50%)' }}
+          >
+            <span className="text-[10px] text-accent-foreground/70 font-medium">SÂN KHẤU</span>
+          </div>
+
           {/* Tree markers - using CSS transitions instead of Framer Motion */}
           {trees.map((tree) => {
             const pos = treePositions[tree.tree_number];
