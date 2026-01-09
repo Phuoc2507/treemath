@@ -124,6 +124,20 @@ const CongratsScreen = () => {
           </div>
         </motion.div>
 
+        {/* Gift notification for high accuracy */}
+        {displayResult.overallAccuracy >= 80 && (
+          <motion.div
+            className="mt-4 sm:mt-6 p-4 bg-gold/20 border border-gold/50 rounded-xl"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <p className="text-gold font-semibold text-sm sm:text-base">
+              🎁 Chúc mừng! Hãy đến GIAN HÀNG để nhận quà!
+            </p>
+          </motion.div>
+        )}
+
         {/* Continue button */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
