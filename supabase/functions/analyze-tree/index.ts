@@ -64,23 +64,44 @@ serve(async (req) => {
       );
     }
 
+    // Validate bounding box format
+    const validateBox = (boxStr: string | null): boolean => {
+      if (!boxStr) return true;
+      try {
+        const parsed = JSON.parse(boxStr);
+        return Array.isArray(parsed) && 
+               parsed.length === 4 &&
+               parsed.every((n: unknown) => typeof n === 'number' && n >= 0 && n <= 10000);
+      } catch { return false; }
+    };
+
+    // Forward optional bounding box parameters with validation
+    const personBox = formData.get("person_box") as string | null;
+    const treeBox = formData.get("tree_box") as string | null;
+
+    if (!validateBox(personBox) || !validateBox(treeBox)) {
+      console.warn("Invalid bounding box format provided");
+      return new Response(
+        JSON.stringify({ error: "Invalid bounding box format. Expected [x1, y1, x2, y2] with values 0-10000" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Build new FormData for upstream
     const upstreamFormData = new FormData();
     upstreamFormData.append("file", file);
-
-    // Forward optional bounding box parameters
-    const personBox = formData.get("person_box");
-    const treeBox = formData.get("tree_box");
-    if (personBox) upstreamFormData.append("person_box", personBox as string);
-    if (treeBox) upstreamFormData.append("tree_box", treeBox as string);
+    if (personBox) upstreamFormData.append("person_box", personBox);
+    if (treeBox) upstreamFormData.append("tree_box", treeBox);
 
     // Ensure the URL ends with /predict
     const predictUrl = upstreamUrl.endsWith('/predict') 
       ? upstreamUrl 
       : `${upstreamUrl.replace(/\/$/, '')}/predict`;
 
+    // Sanitize filename for logging (remove special characters)
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
     console.log(`Proxying request to: ${predictUrl}`);
-    console.log(`File: ${file.name}, Size: ${file.size}, Type: ${mimeType}`);
+    console.log(`File: ${sanitizedName}, Size: ${file.size}, Type: ${mimeType}`);
 
     // Forward to upstream Python API
     const upstreamResponse = await fetch(predictUrl, {

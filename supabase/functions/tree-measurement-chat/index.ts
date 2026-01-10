@@ -139,7 +139,50 @@ serve(async (req) => {
       );
     }
 
-    const { messages } = await req.json();
+    const body = await req.json();
+    const { messages } = body;
+
+    // Validate messages array
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Tin nhắn không hợp lệ.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Limit conversation history to prevent resource exhaustion
+    const MAX_MESSAGES = 50;
+    const MAX_MESSAGE_LENGTH = 2000;
+
+    if (messages.length > MAX_MESSAGES) {
+      return new Response(
+        JSON.stringify({ error: `Quá nhiều tin nhắn. Tối đa ${MAX_MESSAGES} tin.` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate each message
+    for (const msg of messages) {
+      if (!msg || typeof msg.content !== 'string') {
+        return new Response(
+          JSON.stringify({ error: 'Định dạng tin nhắn không hợp lệ.' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (msg.content.length > MAX_MESSAGE_LENGTH) {
+        return new Response(
+          JSON.stringify({ error: `Tin nhắn quá dài. Tối đa ${MAX_MESSAGE_LENGTH} ký tự.` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (!['user', 'assistant'].includes(msg.role)) {
+        return new Response(
+          JSON.stringify({ error: 'Vai trò tin nhắn không hợp lệ.' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -147,7 +190,8 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log(`[tree-measurement-chat] Sending request to Lovable AI with ${messages.length} messages`);
+    // Log sanitized message count (no content)
+    console.log(`[tree-measurement-chat] Processing ${messages.length} messages`);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
