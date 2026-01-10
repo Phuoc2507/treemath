@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useRef, useEffect } from 'react';
-import { Calculator, Ruler, TreePine, Camera, Loader2, AlertTriangle, Edit } from 'lucide-react';
+import { Calculator, Ruler, TreePine, Loader2, AlertTriangle, Edit, Sparkles, ScanEye, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 import BoundingBoxEditor from '@/components/BoundingBoxEditor';
 import { useToast } from '@/hooks/use-toast';
 import { API_CONFIG } from '@/config/api';
 import { z } from 'zod';
 import FloatingChatButton from '@/components/FloatingChatButton';
+import AIBadge from '@/components/AIBadge';
 
 // Schema validation for tree analysis API response
 const TreeAnalysisSchema = z.object({
@@ -284,17 +286,34 @@ const MeasurementScreen = () => {
         </div>
 
         {/* AI Measurement Section */}
-        <Card className="mb-5 sm:mb-6 bg-muted/30 border-border/50">
+        <Card className="mb-5 sm:mb-6 bg-gradient-to-br from-primary/10 to-accent/5 border-primary/30 overflow-hidden relative">
+          {/* AI Active indicator */}
+          <motion.div 
+            className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-accent to-primary"
+            animate={{ x: ['-100%', '100%'] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          />
+          
           <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              AI đo cây giúp bạn
+              <motion.div
+                className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <ScanEye className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              </motion.div>
+              <span>AI Vision</span>
+              <AIBadge size="sm" variant="glow" showText={false} />
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Lưu ý AI có thể mắc sai sót, điều chỉnh trước khi gửi</CardDescription>
+            <CardDescription className="text-xs sm:text-sm flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-primary/60" />
+              Phân tích ảnh thông minh - tự động đo chiều cao & đường kính
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0 sm:pt-0">
             <div className="space-y-1.5 sm:space-y-2">
-              <Label htmlFor="image-upload" className="text-sm sm:text-base">Chọn ảnh</Label>
+              <Label htmlFor="image-upload" className="text-sm sm:text-base">Chọn ảnh cây và người</Label>
               <Input
                 id="image-upload"
                 type="file"
@@ -316,31 +335,103 @@ const MeasurementScreen = () => {
               />
               <p className="text-xs text-muted-foreground">Nhập chính xác để AI tính toán chuẩn hơn.</p>
             </div>
-            {apiError && (
-              <div className="flex items-center gap-2 text-destructive text-xs sm:text-sm p-2 bg-destructive/10 rounded-md">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                <p>{apiError}</p>
-              </div>
-            )}
+            
+            <AnimatePresence>
+              {apiError && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-center gap-2 text-destructive text-xs sm:text-sm p-2 bg-destructive/10 rounded-md"
+                >
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <p>{apiError}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* AI Processing Animation */}
+            <AnimatePresence>
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="rounded-lg bg-primary/5 border border-primary/20 p-3 space-y-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    >
+                      <Sparkles className="w-4 h-4 text-primary" />
+                    </motion.div>
+                    <span className="text-sm text-primary font-medium">AI đang phân tích...</span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <motion.div 
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                      Nhận diện cây trong ảnh
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <motion.div 
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1, repeat: Infinity, delay: 0.3 }}
+                      />
+                      Nhận diện người tham chiếu
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <motion.div 
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1, repeat: Infinity, delay: 0.6 }}
+                      />
+                      Tính toán chiều cao & đường kính
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* Success indicator when we have results */}
+            <AnimatePresence>
+              {boundingBoxes.tree && boundingBoxes.person && !isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="flex items-center gap-2 text-xs sm:text-sm p-2 bg-primary/10 rounded-md text-primary"
+                >
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <p>AI đã nhận diện: 1 cây, 1 người tham chiếu</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
             <div className="flex gap-2">
               <Button
                 onClick={handleImageAnalysis}
                 disabled={isLoading || !imageFile}
-                className="flex-1 h-10 sm:h-11 text-sm sm:text-base"
+                className="flex-1 h-10 sm:h-11 text-sm sm:text-base bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
                 ) : (
-                  <TreePine className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 )}
-                {isLoading ? 'Đang phân tích...' : 'Phân tích ảnh'}
+                {isLoading ? 'AI đang xử lý...' : 'Phân tích với AI'}
               </Button>
 
               {boundingBoxes.tree && boundingBoxes.person && !isLoading && (
                 <Button
                   variant="outline"
                   onClick={() => setShowEditor(true)}
-                  className="w-10 sm:w-12 px-0"
+                  className="w-10 sm:w-12 px-0 border-primary/30"
                   title="Chỉnh sửa vùng đo"
                 >
                   <Edit className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />

@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bot, Leaf } from 'lucide-react';
+import { ArrowLeft, Bot, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
 import { z } from 'zod';
 import { getBackendBaseUrl, getBackendPublishableKey } from '@/lib/backend/env';
-
+import AIBadge from '@/components/AIBadge';
 type Message = { role: 'user' | 'assistant'; content: string };
 
 // Schema for validating streaming chat response chunks
@@ -24,7 +24,7 @@ const ChatScreen = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: '🌳 Xin chào! Mình là trợ lý hướng dẫn đo cây. Bạn muốn biết cách đo chiều cao hay chu vi cây? Hãy hỏi mình nhé!'
+      content: '🌳 Xin chào! Mình là **AI Assistant** - trợ lý thông minh hướng dẫn đo cây. Bạn muốn biết cách đo chiều cao hay chu vi cây? Hãy hỏi mình nhé!'
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -131,7 +131,7 @@ const ChatScreen = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <motion.header
-        className="flex items-center gap-3 p-4 border-b border-border/50 bg-card/50 backdrop-blur-sm"
+        className="flex items-center gap-3 p-4 border-b border-primary/20 bg-gradient-to-r from-card/80 to-card/50 backdrop-blur-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -150,15 +150,22 @@ const ChatScreen = () => {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         
-        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+        <motion.div 
+          className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center border border-primary/40 shadow-lg shadow-primary/10"
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        >
           <Bot className="w-5 h-5 text-primary" />
-        </div>
+        </motion.div>
         
-        <div>
-          <h1 className="font-semibold text-foreground">Trợ lý đo cây</h1>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h1 className="font-semibold text-foreground">AI Assistant</h1>
+            <AIBadge size="sm" variant="glow" showText={false} />
+          </div>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <Leaf className="w-3 h-3" />
-            Hướng dẫn đo chiều cao & chu vi
+            <Sparkles className="w-3 h-3 text-primary/60" />
+            Trợ lý thông minh hướng dẫn đo cây
           </p>
         </div>
       </motion.header>
@@ -175,14 +182,22 @@ const ChatScreen = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-              <Bot className="w-4 h-4 text-secondary-foreground" />
-            </div>
+            <motion.div 
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center border border-primary/30"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <Bot className="w-4 h-4 text-primary" />
+            </motion.div>
             <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="flex items-center gap-2">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Sparkles className="w-3 h-3 text-primary" />
+                </motion.div>
+                <span className="text-xs text-muted-foreground">AI đang suy nghĩ...</span>
               </div>
             </div>
           </motion.div>
