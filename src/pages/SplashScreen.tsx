@@ -83,22 +83,22 @@ const SplashScreen = () => {
         </motion.div>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-1 text-center">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-foreground mb-1 text-center">
           ĐO ĐẠC CÂY XANH
         </h1>
         
         {/* AI Tagline */}
         <motion.p 
-          className="text-primary font-medium text-sm sm:text-base mb-1 flex items-center gap-1.5"
+          className="text-primary font-medium text-xs sm:text-sm mb-1 flex items-center gap-1"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
           Ứng dụng AI đo cây thông minh
         </motion.p>
 
-        <p className="text-muted-foreground text-sm sm:text-base mb-6 text-center">
+        <p className="text-muted-foreground text-xs sm:text-sm mb-4 sm:mb-6 text-center">
           Chạm vào vòng tròn ở giữa để bắt đầu
         </p>
 
@@ -120,7 +120,7 @@ const SplashScreen = () => {
           
           <svg
             viewBox="0 0 200 300"
-            className="w-48 h-72 md:w-64 md:h-96 animate-float relative z-10"
+            className="w-36 h-52 sm:w-48 sm:h-72 md:w-64 md:h-96 animate-float relative z-10"
             aria-label="Minh hoạ cây xanh"
             role="img"
           >
@@ -169,7 +169,7 @@ const SplashScreen = () => {
           <motion.button
             onClick={handleClick}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                       w-20 h-20 rounded-full bg-primary/20 backdrop-blur-sm
+                       w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-primary/20 backdrop-blur-sm
                        flex items-center justify-center cursor-pointer
                        border-2 border-primary/50 hover:bg-primary/30 transition-colors z-20"
             animate={{
@@ -184,17 +184,17 @@ const SplashScreen = () => {
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Hand className="w-8 h-8 text-primary" />
+            <Hand className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
           </motion.button>
         </div>
 
         {/* Instruction text */}
-        <p className="text-muted-foreground mt-6 text-center text-sm animate-pulse">
+        <p className="text-muted-foreground mt-4 sm:mt-6 text-center text-xs sm:text-sm animate-pulse">
           Chạm vào cây để bắt đầu
         </p>
 
         {/* AI Feature Cards */}
-        <div className="mt-6 w-full max-w-sm space-y-3">
+        <div className="mt-4 sm:mt-6 w-full max-w-xs sm:max-w-sm space-y-2 sm:space-y-3">
           <AIFeatureCard
             icon={ScanEye}
             title="AI Vision"
