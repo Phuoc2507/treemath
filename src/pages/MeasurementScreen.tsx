@@ -244,7 +244,7 @@ const MeasurementScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center pt-4 sm:pt-8 p-3 sm:p-4">
       {showEditor && previewUrl && boundingBoxes.tree && boundingBoxes.person && (
         <BoundingBoxEditor
           imageSrc={previewUrl}
@@ -271,10 +271,10 @@ const MeasurementScreen = () => {
         />
       )}
 
-      <div className="glass-card p-5 sm:p-6 md:p-8 w-full max-w-md animate-fade-in">
-        <div className="text-center mb-5 sm:mb-6">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 animate-scale-in">
-            <Ruler className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
+      <div className="glass-card p-4 sm:p-6 md:p-8 w-full max-w-[340px] sm:max-w-md animate-fade-in">
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 animate-scale-in">
+            <Ruler className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Nhập Dữ Liệu Đo</h1>
           {selectedTree && (
