@@ -17,6 +17,7 @@ export type Database = {
       leaderboard: {
         Row: {
           accuracy_score: number
+          campus_id: number | null
           created_at: string | null
           id: string
           measurement_id: string | null
@@ -26,6 +27,7 @@ export type Database = {
         }
         Insert: {
           accuracy_score: number
+          campus_id?: number | null
           created_at?: string | null
           id?: string
           measurement_id?: string | null
@@ -35,6 +37,7 @@ export type Database = {
         }
         Update: {
           accuracy_score?: number
+          campus_id?: number | null
           created_at?: string | null
           id?: string
           measurement_id?: string | null
@@ -56,6 +59,7 @@ export type Database = {
         Row: {
           actual_diameter: number | null
           actual_height: number | null
+          campus_id: number | null
           created_at: string | null
           id: number
           location_description: string | null
@@ -66,6 +70,7 @@ export type Database = {
         Insert: {
           actual_diameter?: number | null
           actual_height?: number | null
+          campus_id?: number | null
           created_at?: string | null
           id?: number
           location_description?: string | null
@@ -76,6 +81,7 @@ export type Database = {
         Update: {
           actual_diameter?: number | null
           actual_height?: number | null
+          campus_id?: number | null
           created_at?: string | null
           id?: number
           location_description?: string | null
@@ -91,6 +97,7 @@ export type Database = {
           biomass_kg: number | null
           calculated_diameter: number | null
           calculated_height: number | null
+          campus_id: number | null
           co2_absorbed_kg: number | null
           created_at: string | null
           id: string
@@ -105,6 +112,7 @@ export type Database = {
           biomass_kg?: number | null
           calculated_diameter?: number | null
           calculated_height?: number | null
+          campus_id?: number | null
           co2_absorbed_kg?: number | null
           created_at?: string | null
           id?: string
@@ -119,6 +127,7 @@ export type Database = {
           biomass_kg?: number | null
           calculated_diameter?: number | null
           calculated_height?: number | null
+          campus_id?: number | null
           co2_absorbed_kg?: number | null
           created_at?: string | null
           id?: string

@@ -82,8 +82,6 @@ function validateInput(data: unknown): { valid: boolean; error?: string; parsed?
 
 serve(async (req) => {
   // Handle CORS preflight requests
-
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -178,10 +176,10 @@ serve(async (req) => {
       // Continue anyway - don't block legitimate requests due to rate limit tracking issues
     }
 
-    // Verify tree exists
+    // Verify tree exists and get campus_id
     const { data: treeData, error: treeError } = await supabase
       .from('master_trees')
-      .select('tree_number')
+      .select('tree_number, campus_id')
       .eq('tree_number', parsed.tree_id)
       .single();
 
@@ -193,7 +191,10 @@ serve(async (req) => {
       );
     }
 
-    // Insert measurement
+    const campusId = treeData.campus_id || 1;
+    console.log(`[submit-measurement] Tree ${parsed.tree_id} belongs to campus ${campusId}`);
+
+    // Insert measurement with campus_id
     const { data: measurementData, error: measurementError } = await supabase
       .from('measurements')
       .insert({
@@ -207,6 +208,7 @@ serve(async (req) => {
         accuracy_score: parsed.accuracy_score,
         biomass_kg: parsed.biomass_kg,
         co2_absorbed_kg: parsed.co2_absorbed_kg,
+        campus_id: campusId,
       })
       .select()
       .single();
@@ -221,7 +223,7 @@ serve(async (req) => {
 
     console.log(`[submit-measurement] Measurement saved: ${measurementData.id}`);
 
-    // Insert leaderboard entry
+    // Insert leaderboard entry with campus_id
     const { error: leaderboardError } = await supabase
       .from('leaderboard')
       .insert({
@@ -230,6 +232,7 @@ serve(async (req) => {
         user_class: parsed.user_class,
         tree_number: parsed.tree_id,
         accuracy_score: parsed.accuracy_score,
+        campus_id: campusId,
       });
 
     if (leaderboardError) {
