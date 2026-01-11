@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getBackendClient } from '@/lib/backend/client';
 import { useMeasurementStore } from '@/store/measurementStore';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Trophy, Medal, RefreshCw, Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import FloatingChatButton from '@/components/FloatingChatButton';
 
@@ -16,6 +16,26 @@ interface LeaderboardEntry {
   created_at: string;
 }
 
+interface MasterTree {
+  tree_number: number;
+  campus_id: number;
+}
+
+// Campus names
+const campusNames: { [key: number]: string } = {
+  1: 'Cơ sở 1',
+  2: 'Cơ sở 2',
+  3: 'Cơ sở 3',
+};
+
+// Helper to get campus from tree number
+const getCampusFromTreeNumber = (treeNumber: number): number => {
+  if (treeNumber >= 1 && treeNumber <= 17) return 1;
+  if (treeNumber >= 18 && treeNumber <= 24) return 2;
+  if (treeNumber >= 25 && treeNumber <= 29) return 3;
+  return 1;
+};
+
 const LeaderboardScreen = () => {
   const navigate = useNavigate();
   const { treeNumber } = useParams<{ treeNumber: string }>();
@@ -24,7 +44,44 @@ const LeaderboardScreen = () => {
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(5);
   const [currentTree, setCurrentTree] = useState<number>(treeNumber ? parseInt(treeNumber) : 1);
-  const totalTrees = 17; // Total number of trees
+  const [trees, setTrees] = useState<MasterTree[]>([]);
+  const [selectedCampus, setSelectedCampus] = useState<number>(() => 
+    getCampusFromTreeNumber(treeNumber ? parseInt(treeNumber) : 1)
+  );
+
+  // Fetch trees to know which ones exist
+  useEffect(() => {
+    const fetchTrees = async () => {
+      const backend = getBackendClient();
+      if (!backend) return;
+
+      const { data } = await backend
+        .from('master_trees')
+        .select('tree_number, campus_id')
+        .order('tree_number');
+
+      if (data) {
+        setTrees(data);
+      }
+    };
+    fetchTrees();
+  }, []);
+
+  // Filter trees by campus
+  const campusTrees = useMemo(() => 
+    trees.filter(t => (t.campus_id || getCampusFromTreeNumber(t.tree_number)) === selectedCampus),
+    [trees, selectedCampus]
+  );
+
+  // Count trees per campus
+  const treeCounts = useMemo(() => {
+    const counts: { [key: number]: number } = { 1: 0, 2: 0, 3: 0 };
+    trees.forEach(t => {
+      const campusId = t.campus_id || getCampusFromTreeNumber(t.tree_number);
+      counts[campusId] = (counts[campusId] || 0) + 1;
+    });
+    return counts;
+  }, [trees]);
 
   // Auto-navigate back to splash after 5 seconds
   useEffect(() => {
@@ -69,7 +126,9 @@ const LeaderboardScreen = () => {
   // Update tree from URL param
   useEffect(() => {
     if (treeNumber) {
-      setCurrentTree(parseInt(treeNumber));
+      const treeNum = parseInt(treeNumber);
+      setCurrentTree(treeNum);
+      setSelectedCampus(getCampusFromTreeNumber(treeNum));
     }
   }, [treeNumber]);
 
@@ -101,9 +160,33 @@ const LeaderboardScreen = () => {
     };
   }, [currentTree]);
 
+  // When campus changes, switch to first tree of that campus
+  useEffect(() => {
+    if (campusTrees.length > 0 && !campusTrees.some(t => t.tree_number === currentTree)) {
+      const firstTree = campusTrees[0].tree_number;
+      setCurrentTree(firstTree);
+      navigate(`/leaderboard/${firstTree}`, { replace: true });
+    }
+  }, [selectedCampus, campusTrees, currentTree, navigate]);
+
   const handlePlayAgain = () => {
     reset();
     navigate('/');
+  };
+
+  const navigateTree = (direction: 'prev' | 'next') => {
+    const currentIndex = campusTrees.findIndex(t => t.tree_number === currentTree);
+    let newIndex: number;
+    
+    if (direction === 'prev') {
+      newIndex = currentIndex <= 0 ? campusTrees.length - 1 : currentIndex - 1;
+    } else {
+      newIndex = currentIndex >= campusTrees.length - 1 ? 0 : currentIndex + 1;
+    }
+    
+    const newTree = campusTrees[newIndex]?.tree_number || currentTree;
+    setCurrentTree(newTree);
+    navigate(`/leaderboard/${newTree}`, { replace: true });
   };
 
   const getRankIcon = (rank: number) => {
@@ -141,17 +224,29 @@ const LeaderboardScreen = () => {
             Bảng Xếp Hạng
           </h1>
           
+          {/* Campus selector */}
+          <div className="flex justify-center gap-2 mt-3 flex-wrap">
+            {[1, 2, 3].map((campusId) => (
+              <Button
+                key={campusId}
+                variant={selectedCampus === campusId ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCampus(campusId)}
+                className="text-xs px-3"
+              >
+                {campusNames[campusId]} ({treeCounts[campusId] || 0})
+              </Button>
+            ))}
+          </div>
+
           {/* Tree selector */}
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mt-2 sm:mt-3">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mt-3">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                const prev = currentTree <= 1 ? totalTrees : currentTree - 1;
-                setCurrentTree(prev);
-                navigate(`/leaderboard/${prev}`, { replace: true });
-              }}
+              onClick={() => navigateTree('prev')}
               className="h-8 w-8"
+              disabled={campusTrees.length === 0}
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
@@ -163,12 +258,9 @@ const LeaderboardScreen = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                const next = currentTree >= totalTrees ? 1 : currentTree + 1;
-                setCurrentTree(next);
-                navigate(`/leaderboard/${next}`, { replace: true });
-              }}
+              onClick={() => navigateTree('next')}
               className="h-8 w-8"
+              disabled={campusTrees.length === 0}
             >
               <ChevronRight className="w-5 h-5" />
             </Button>

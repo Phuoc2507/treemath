@@ -11,12 +11,21 @@ interface MasterTree {
   tree_number: number;
   species: string;
   location_description: string | null;
+  campus_id: number;
 }
+
+// Campus names
+const campusNames: { [key: number]: string } = {
+  1: 'Cơ sở 1',
+  2: 'Cơ sở 2',
+  3: 'Cơ sở 3',
+};
 
 const QRCodesScreen = () => {
   const navigate = useNavigate();
   const [trees, setTrees] = useState<MasterTree[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCampus, setSelectedCampus] = useState<number | null>(null); // null = all
   const printRef = useRef<HTMLDivElement>(null);
 
   // Get base URL for QR codes
@@ -35,7 +44,7 @@ const QRCodesScreen = () => {
 
       const { data, error } = await backend
         .from("master_trees")
-        .select("id, tree_number, species, location_description")
+        .select("id, tree_number, species, location_description, campus_id")
         .order("tree_number");
 
       if (!error && data) {
@@ -47,11 +56,23 @@ const QRCodesScreen = () => {
     fetchTrees();
   }, []);
 
+  // Filter trees by campus
+  const filteredTrees = selectedCampus === null 
+    ? trees 
+    : trees.filter(t => (t.campus_id || 1) === selectedCampus);
+
+  // Count trees per campus
+  const treeCounts: { [key: number]: number } = { 1: 0, 2: 0, 3: 0 };
+  trees.forEach(t => {
+    const campusId = t.campus_id || 1;
+    treeCounts[campusId] = (treeCounts[campusId] || 0) + 1;
+  });
+
   const handlePrint = () => {
     window.print();
   };
 
-  const downloadSingleQR = (treeNumber: number, species: string) => {
+  const downloadSingleQR = (treeNumber: number, species: string, campusId: number) => {
     const svg = document.getElementById(`qr-${treeNumber}`);
     if (!svg) return;
 
@@ -62,9 +83,10 @@ const QRCodesScreen = () => {
       const padding = 40;
       const qrSize = 200;
       const badgeHeight = 36;
+      const campusBadgeHeight = 24;
       const speciesHeight = 30;
       const canvasWidth = qrSize + padding * 2;
-      const canvasHeight = badgeHeight + 20 + qrSize + 20 + speciesHeight + padding;
+      const canvasHeight = campusBadgeHeight + 10 + badgeHeight + 20 + qrSize + 20 + speciesHeight + padding;
 
       const canvas = document.createElement("canvas");
       canvas.width = canvasWidth;
@@ -85,13 +107,31 @@ const QRCodesScreen = () => {
       ctx.roundRect(1, 1, canvasWidth - 2, canvasHeight - 2, 16);
       ctx.stroke();
 
+      // Campus badge (smaller, at top)
+      const campusText = campusNames[campusId] || 'Cơ sở 1';
+      ctx.font = "bold 11px sans-serif";
+      const campusTextWidth = ctx.measureText(campusText).width;
+      const campusBadgeWidth = campusTextWidth + 20;
+      const campusBadgeX = (canvasWidth - campusBadgeWidth) / 2;
+      const campusBadgeY = 15;
+
+      ctx.fillStyle = "#3b82f6"; // Blue for campus
+      ctx.beginPath();
+      ctx.roundRect(campusBadgeX, campusBadgeY, campusBadgeWidth, campusBadgeHeight, 12);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(campusText, canvasWidth / 2, campusBadgeY + campusBadgeHeight / 2);
+
       // Green badge for tree number
       const badgeText = `Cây số ${treeNumber}`;
       ctx.font = "bold 14px sans-serif";
       const badgeTextWidth = ctx.measureText(badgeText).width;
       const badgeWidth = badgeTextWidth + 32;
       const badgeX = (canvasWidth - badgeWidth) / 2;
-      const badgeY = 20;
+      const badgeY = campusBadgeY + campusBadgeHeight + 10;
 
       ctx.fillStyle = "#22c55e";
       ctx.beginPath();
@@ -136,22 +176,45 @@ const QRCodesScreen = () => {
     <div className="min-h-screen bg-background">
       {/* Header - Hidden when printing */}
       <div className="print:hidden sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border p-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">QR Codes - Tree-Math</h1>
-              <p className="text-sm text-muted-foreground">
-                {trees.length} cây • In ra và dán lên bảng thông tin
-              </p>
+        <div className="max-w-6xl mx-auto flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">QR Codes - Tree-Math</h1>
+                <p className="text-sm text-muted-foreground">
+                  {filteredTrees.length} cây • In ra và dán lên bảng thông tin
+                </p>
+              </div>
             </div>
+            <Button onClick={handlePrint} className="gap-2">
+              <Printer className="w-4 h-4" />
+              In tất cả
+            </Button>
           </div>
-          <Button onClick={handlePrint} className="gap-2">
-            <Printer className="w-4 h-4" />
-            In tất cả
-          </Button>
+
+          {/* Campus filter tabs */}
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant={selectedCampus === null ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedCampus(null)}
+            >
+              Tất cả ({trees.length})
+            </Button>
+            {[1, 2, 3].map((campusId) => (
+              <Button
+                key={campusId}
+                variant={selectedCampus === campusId ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCampus(campusId)}
+              >
+                {campusNames[campusId]} ({treeCounts[campusId] || 0})
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -163,7 +226,7 @@ const QRCodesScreen = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 print:grid-cols-2 print:gap-4">
-            {trees.map((tree, index) => (
+            {filteredTrees.map((tree, index) => (
               <motion.div
                 key={tree.tree_number}
                 initial={{ opacity: 0, y: 20 }}
@@ -171,6 +234,11 @@ const QRCodesScreen = () => {
                 transition={{ delay: index * 0.05 }}
                 className="bg-card border border-border rounded-xl p-6 flex flex-col items-center print:break-inside-avoid print:border-2 print:border-black"
               >
+                {/* Campus Badge */}
+                <div className="bg-blue-500/20 text-blue-400 px-3 py-0.5 rounded-full text-xs font-medium mb-2">
+                  {campusNames[tree.campus_id || 1]}
+                </div>
+
                 {/* Tree Number Badge */}
                 <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold mb-4">
                   Cây số {tree.tree_number}
@@ -207,7 +275,7 @@ const QRCodesScreen = () => {
                   variant="ghost"
                   size="sm"
                   className="mt-3 print:hidden"
-                  onClick={() => downloadSingleQR(tree.tree_number, tree.species || "")}
+                  onClick={() => downloadSingleQR(tree.tree_number, tree.species || "", tree.campus_id || 1)}
                 >
                   <Download className="w-4 h-4 mr-1" />
                   Tải PNG

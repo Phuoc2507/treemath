@@ -13,6 +13,13 @@ interface LeaderboardEntry {
   accuracy_score: number;
 }
 
+// Campus names
+const campusNames: { [key: number]: string } = {
+  1: 'Cơ sở 1',
+  2: 'Cơ sở 2',
+  3: 'Cơ sở 3',
+};
+
 const TYPEWRITER_TEXT = "Bạn có biết về sức mạnh của cây xanh? Mỗi cây có thể hấp thụ hàng chục kg CO₂ mỗi năm, góp phần làm mát không khí và bảo vệ môi trường. Hãy cùng đo và khám phá sức mạnh của cây này nhé! 🌍💚";
 
 const TreeQRScreen = () => {
@@ -32,9 +39,10 @@ const TreeQRScreen = () => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
   
-  // Tree CO2 data
+  // Tree data
   const [treeCO2, setTreeCO2] = useState<number | null>(null);
   const [treeSpecies, setTreeSpecies] = useState<string | null>(null);
+  const [treeCampusId, setTreeCampusId] = useState<number>(1);
 
   // Typewriter effect - optimized with RAF
   useEffect(() => {
@@ -77,7 +85,7 @@ const TreeQRScreen = () => {
       
       const { data, error } = await backend
         .from('master_trees')
-        .select('actual_height, actual_diameter, species')
+        .select('actual_height, actual_diameter, species, campus_id')
         .eq('tree_number', treeNumber)
         .single();
       
@@ -86,6 +94,7 @@ const TreeQRScreen = () => {
         const co2 = calculateCO2Absorbed(biomass);
         setTreeCO2(Math.round(co2 * 10) / 10);
         setTreeSpecies(data.species);
+        setTreeCampusId(data.campus_id || 1);
       }
     };
     
@@ -171,6 +180,11 @@ const TreeQRScreen = () => {
           <div className="absolute -bottom-1 -left-1 w-2 h-2 sm:w-3 sm:h-3 bg-leaf rounded-full blur-sm animate-pulse" style={{ animationDelay: '0.5s' }} />
         </div>
         
+        {/* Campus badge */}
+        <div className="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium mb-2">
+          📍 {campusNames[treeCampusId]}
+        </div>
+
         {/* Tree number badge */}
         <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-primary/30 via-forest/25 to-primary/30 text-primary px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg border border-primary/40">
           <span className="text-xl sm:text-2xl">🌳</span>
