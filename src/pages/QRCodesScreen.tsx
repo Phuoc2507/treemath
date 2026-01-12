@@ -26,7 +26,7 @@ const QRCodesScreen = () => {
   const navigate = useNavigate();
   const [trees, setTrees] = useState<MasterTree[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCampus, setSelectedCampus] = useState<number | null>(null); // null = all
+  const [selectedCampus, setSelectedCampus] = useState<number | null>(2); // default to campus 2
   const printRef = useRef<HTMLDivElement>(null);
 
   // Get base URL for QR codes

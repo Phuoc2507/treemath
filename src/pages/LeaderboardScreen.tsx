@@ -44,10 +44,10 @@ const LeaderboardScreen = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(5);
-  const [currentTree, setCurrentTree] = useState<number>(treeNumber ? parseInt(treeNumber) : 1);
+  const [currentTree, setCurrentTree] = useState<number>(treeNumber ? parseInt(treeNumber) : 18);
   const [trees, setTrees] = useState<MasterTree[]>([]);
   const [selectedCampus, setSelectedCampus] = useState<number>(() => 
-    getCampusFromTreeNumber(treeNumber ? parseInt(treeNumber) : 1)
+    getCampusFromTreeNumber(treeNumber ? parseInt(treeNumber) : 18)
   );
 
   // Fetch trees to know which ones exist
