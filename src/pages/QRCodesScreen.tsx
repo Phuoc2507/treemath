@@ -81,14 +81,14 @@ const QRCodesScreen = () => {
     const qrImg = new Image();
 
     qrImg.onload = () => {
-      const padding = 40;
-      const qrSize = 200;
-      const badgeHeight = 36;
-      const campusBadgeHeight = 24;
-      const speciesHeight = 30;
-      const questionHeight = 60; // Space for curiosity question
-      const canvasWidth = qrSize + padding * 2;
-      const canvasHeight = campusBadgeHeight + 10 + badgeHeight + 20 + qrSize + 20 + questionHeight + 20 + speciesHeight + padding;
+      const padding = 32;
+      const qrSize = 180;
+      const badgeHeight = 32;
+      const campusBadgeHeight = 22;
+      const questionHeight = 70;
+      const speciesHeight = 28;
+      const canvasWidth = qrSize + padding * 2 + 20;
+      const canvasHeight = padding + campusBadgeHeight + 8 + badgeHeight + 16 + qrSize + 24 + 16 + questionHeight + 16 + speciesHeight + padding;
 
       const canvas = document.createElement("canvas");
       canvas.width = canvasWidth;
@@ -96,105 +96,157 @@ const QRCodesScreen = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Dark background with rounded corners
-      ctx.fillStyle = "#1a1f1a";
+      // Beautiful gradient background
+      const bgGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+      bgGradient.addColorStop(0, "#0f1a0f");
+      bgGradient.addColorStop(0.5, "#162116");
+      bgGradient.addColorStop(1, "#0f1a0f");
+      ctx.fillStyle = bgGradient;
       ctx.beginPath();
-      ctx.roundRect(0, 0, canvasWidth, canvasHeight, 16);
+      ctx.roundRect(0, 0, canvasWidth, canvasHeight, 20);
       ctx.fill();
 
-      // Border
-      ctx.strokeStyle = "#2d3b2d";
+      // Subtle inner glow border
+      const borderGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+      borderGradient.addColorStop(0, "#22c55e40");
+      borderGradient.addColorStop(0.5, "#10b98160");
+      borderGradient.addColorStop(1, "#22c55e40");
+      ctx.strokeStyle = borderGradient;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(1, 1, canvasWidth - 2, canvasHeight - 2, 16);
+      ctx.roundRect(2, 2, canvasWidth - 4, canvasHeight - 4, 18);
       ctx.stroke();
 
-      // Campus badge (smaller, at top)
-      const campusText = campusNames[campusId] || 'Cơ sở 1';
-      ctx.font = "bold 11px sans-serif";
-      const campusTextWidth = ctx.measureText(campusText).width;
-      const campusBadgeWidth = campusTextWidth + 20;
-      const campusBadgeX = (canvasWidth - campusBadgeWidth) / 2;
-      const campusBadgeY = 15;
+      // Decorative leaf accent at corners
+      ctx.font = "16px sans-serif";
+      ctx.fillStyle = "#22c55e50";
+      ctx.fillText("🌿", 12, 28);
+      ctx.fillText("🌿", canvasWidth - 28, canvasHeight - 16);
 
-      ctx.fillStyle = "#3b82f6"; // Blue for campus
+      // Campus badge with gradient
+      const campusText = campusNames[campusId] || 'Cơ sở 1';
+      ctx.font = "bold 11px system-ui, sans-serif";
+      const campusTextWidth = ctx.measureText(campusText).width;
+      const campusBadgeWidth = campusTextWidth + 24;
+      const campusBadgeX = (canvasWidth - campusBadgeWidth) / 2;
+      const campusBadgeY = padding - 8;
+
+      const campusGradient = ctx.createLinearGradient(campusBadgeX, campusBadgeY, campusBadgeX + campusBadgeWidth, campusBadgeY + campusBadgeHeight);
+      campusGradient.addColorStop(0, "#3b82f6");
+      campusGradient.addColorStop(1, "#2563eb");
+      ctx.fillStyle = campusGradient;
       ctx.beginPath();
-      ctx.roundRect(campusBadgeX, campusBadgeY, campusBadgeWidth, campusBadgeHeight, 12);
+      ctx.roundRect(campusBadgeX, campusBadgeY, campusBadgeWidth, campusBadgeHeight, 11);
       ctx.fill();
+
+      // Campus badge shadow
+      ctx.shadowColor = "#3b82f640";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 2;
 
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(campusText, canvasWidth / 2, campusBadgeY + campusBadgeHeight / 2);
+      ctx.shadowColor = "transparent";
 
-      // Green badge for tree number (use tree_number_in_campus)
-      const badgeText = `Cây số ${treeNumberInCampus || treeNumber}`;
-      ctx.font = "bold 14px sans-serif";
+      // Tree number badge with beautiful gradient
+      const badgeText = `🌳 Cây số ${treeNumberInCampus || treeNumber}`;
+      ctx.font = "bold 15px system-ui, sans-serif";
       const badgeTextWidth = ctx.measureText(badgeText).width;
-      const badgeWidth = badgeTextWidth + 32;
+      const badgeWidth = badgeTextWidth + 36;
       const badgeX = (canvasWidth - badgeWidth) / 2;
-      const badgeY = campusBadgeY + campusBadgeHeight + 10;
+      const badgeY = campusBadgeY + campusBadgeHeight + 8;
 
-      ctx.fillStyle = "#22c55e";
+      const treeGradient = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeWidth, badgeY + badgeHeight);
+      treeGradient.addColorStop(0, "#22c55e");
+      treeGradient.addColorStop(0.5, "#16a34a");
+      treeGradient.addColorStop(1, "#15803d");
+      ctx.fillStyle = treeGradient;
       ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 18);
+      ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 16);
       ctx.fill();
 
+      // Badge glow
+      ctx.shadowColor = "#22c55e60";
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 3;
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(badgeText, canvasWidth / 2, badgeY + badgeHeight / 2);
+      ctx.shadowColor = "transparent";
 
-      // White background for QR
+      // QR code container with shadow
       const qrX = (canvasWidth - qrSize) / 2;
-      const qrY = badgeY + badgeHeight + 20;
+      const qrY = badgeY + badgeHeight + 16;
+      
+      // QR shadow
+      ctx.shadowColor = "#00000040";
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetY = 4;
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
-      ctx.roundRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 8);
+      ctx.roundRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24, 12);
       ctx.fill();
+      ctx.shadowColor = "transparent";
 
       // Draw QR code
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
 
-      // Curiosity question box
-      const questionY = qrY + qrSize + 15;
-      const questionBoxHeight = 50;
-      const questionBoxWidth = qrSize + 20;
+      // Curiosity question box - more attractive design
+      const questionY = qrY + qrSize + 24;
+      const questionBoxHeight = questionHeight;
+      const questionBoxWidth = qrSize + 30;
       const questionBoxX = (canvasWidth - questionBoxWidth) / 2;
       
-      // Green gradient background for question
-      const gradient = ctx.createLinearGradient(questionBoxX, questionY, questionBoxX + questionBoxWidth, questionY + questionBoxHeight);
-      gradient.addColorStop(0, "#dcfce7");
-      gradient.addColorStop(1, "#d1fae5");
-      ctx.fillStyle = gradient;
+      // Question box with beautiful gradient
+      const questionGradient = ctx.createLinearGradient(questionBoxX, questionY, questionBoxX, questionY + questionBoxHeight);
+      questionGradient.addColorStop(0, "#ecfdf5");
+      questionGradient.addColorStop(0.5, "#d1fae5");
+      questionGradient.addColorStop(1, "#a7f3d0");
+      ctx.fillStyle = questionGradient;
       ctx.beginPath();
-      ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 10);
+      ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 14);
       ctx.fill();
       
-      // Border for question box
-      ctx.strokeStyle = "#22c55e";
-      ctx.lineWidth = 2;
+      // Gradient border for question box
+      const qBorderGradient = ctx.createLinearGradient(questionBoxX, questionY, questionBoxX + questionBoxWidth, questionY);
+      qBorderGradient.addColorStop(0, "#10b981");
+      qBorderGradient.addColorStop(0.5, "#22c55e");
+      qBorderGradient.addColorStop(1, "#10b981");
+      ctx.strokeStyle = qBorderGradient;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 10);
+      ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 14);
       ctx.stroke();
       
-      // Question text
-      ctx.font = "bold 13px 'Quicksand', sans-serif";
-      ctx.fillStyle = "#15803d";
+      // Main question text with shadow
+      ctx.shadowColor = "#16a34a30";
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetY = 1;
+      ctx.font = "bold 14px system-ui, sans-serif";
+      ctx.fillStyle = "#166534";
       ctx.textAlign = "center";
-      ctx.fillText("🌿 Cây này hấp thụ bao nhiêu CO₂?", canvasWidth / 2, questionY + 20);
+      ctx.fillText("🌿 Cây này hấp thụ", canvasWidth / 2, questionY + 22);
+      ctx.fillText("bao nhiêu CO₂?", canvasWidth / 2, questionY + 40);
+      ctx.shadowColor = "transparent";
       
-      ctx.font = "bold 11px 'Quicksand', sans-serif";
+      // Sub text
+      ctx.font = "bold 12px system-ui, sans-serif";
       ctx.fillStyle = "#059669";
-      ctx.fillText("✨ Quét mã để khám phá!", canvasWidth / 2, questionY + 38);
+      ctx.fillText("✨ Quét mã để khám phá! ✨", canvasWidth / 2, questionY + 58);
 
-      // Species name (moved down)
-      const speciesY = questionY + questionBoxHeight + 15;
+      // Species name with glow
+      const speciesY = questionY + questionBoxHeight + 18;
       const speciesText = species || "Chưa xác định";
-      ctx.font = "bold 16px sans-serif";
-      ctx.fillStyle = "#22c55e";
+      ctx.font = "bold 15px system-ui, sans-serif";
+      ctx.fillStyle = "#4ade80";
+      ctx.shadowColor = "#22c55e50";
+      ctx.shadowBlur = 6;
       ctx.textAlign = "center";
       ctx.fillText(speciesText, canvasWidth / 2, speciesY);
+      ctx.shadowColor = "transparent";
 
       // Download
       const pngFile = canvas.toDataURL("image/png");
