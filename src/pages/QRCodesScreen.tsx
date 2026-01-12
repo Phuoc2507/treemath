@@ -86,8 +86,9 @@ const QRCodesScreen = () => {
       const badgeHeight = 36;
       const campusBadgeHeight = 24;
       const speciesHeight = 30;
+      const questionHeight = 60; // Space for curiosity question
       const canvasWidth = qrSize + padding * 2;
-      const canvasHeight = campusBadgeHeight + 10 + badgeHeight + 20 + qrSize + 20 + speciesHeight + padding;
+      const canvasHeight = campusBadgeHeight + 10 + badgeHeight + 20 + qrSize + 20 + questionHeight + 20 + speciesHeight + padding;
 
       const canvas = document.createElement("canvas");
       canvas.width = canvasWidth;
@@ -155,12 +156,45 @@ const QRCodesScreen = () => {
       // Draw QR code
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
 
-      // Species name
+      // Curiosity question box
+      const questionY = qrY + qrSize + 15;
+      const questionBoxHeight = 50;
+      const questionBoxWidth = qrSize + 20;
+      const questionBoxX = (canvasWidth - questionBoxWidth) / 2;
+      
+      // Green gradient background for question
+      const gradient = ctx.createLinearGradient(questionBoxX, questionY, questionBoxX + questionBoxWidth, questionY + questionBoxHeight);
+      gradient.addColorStop(0, "#dcfce7");
+      gradient.addColorStop(1, "#d1fae5");
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 10);
+      ctx.fill();
+      
+      // Border for question box
+      ctx.strokeStyle = "#22c55e";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 10);
+      ctx.stroke();
+      
+      // Question text
+      ctx.font = "bold 13px 'Quicksand', sans-serif";
+      ctx.fillStyle = "#15803d";
+      ctx.textAlign = "center";
+      ctx.fillText("🌿 Cây này hấp thụ bao nhiêu CO₂?", canvasWidth / 2, questionY + 20);
+      
+      ctx.font = "bold 11px 'Quicksand', sans-serif";
+      ctx.fillStyle = "#059669";
+      ctx.fillText("✨ Quét mã để khám phá!", canvasWidth / 2, questionY + 38);
+
+      // Species name (moved down)
+      const speciesY = questionY + questionBoxHeight + 15;
       const speciesText = species || "Chưa xác định";
       ctx.font = "bold 16px sans-serif";
       ctx.fillStyle = "#22c55e";
       ctx.textAlign = "center";
-      ctx.fillText(speciesText, canvasWidth / 2, qrY + qrSize + 30);
+      ctx.fillText(speciesText, canvasWidth / 2, speciesY);
 
       // Download
       const pngFile = canvas.toDataURL("image/png");
@@ -256,13 +290,13 @@ const QRCodesScreen = () => {
                   />
                 </div>
 
-                {/* Curiosity question */}
-                <div className="bg-gradient-to-r from-primary/20 to-accent/20 px-3 py-2 rounded-lg mb-3 text-center w-full">
-                  <p className="text-sm font-medium text-foreground">
-                    🌳 Cây này hấp thụ bao nhiêu CO₂?
+                {/* Curiosity question - nature-friendly style */}
+                <div className="bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/20 border border-green-500/30 px-4 py-3 rounded-xl mb-3 text-center w-full print:bg-green-50 print:border-green-600">
+                  <p className="text-base md:text-lg font-bold text-green-700 dark:text-green-400 leading-tight print:text-green-800" style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}>
+                    🌿 Cây này hấp thụ bao nhiêu CO₂?
                   </p>
-                  <p className="text-xs text-primary font-bold">
-                    Quét để khám phá!
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-1 print:text-emerald-700" style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}>
+                    ✨ Quét mã để khám phá!
                   </p>
                 </div>
 
