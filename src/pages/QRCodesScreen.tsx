@@ -86,9 +86,11 @@ const QRCodesScreen = () => {
       const badgeHeight = 32;
       const campusBadgeHeight = 22;
       const questionHeight = 70;
-      const speciesHeight = 28;
+      // Only show species for campus 1
+      const showSpecies = campusId === 1;
+      const speciesHeight = showSpecies ? 28 : 0;
       const canvasWidth = qrSize + padding * 2 + 20;
-      const canvasHeight = padding + campusBadgeHeight + 8 + badgeHeight + 16 + qrSize + 24 + 16 + questionHeight + 16 + speciesHeight + padding;
+      const canvasHeight = padding + campusBadgeHeight + 8 + badgeHeight + 16 + qrSize + 24 + 16 + questionHeight + (showSpecies ? 16 + speciesHeight : 0) + padding;
 
       const canvas = document.createElement("canvas");
       canvas.width = canvasWidth;
@@ -237,16 +239,18 @@ const QRCodesScreen = () => {
       ctx.fillStyle = "#059669";
       ctx.fillText("✨ Quét mã để khám phá! ✨", canvasWidth / 2, questionY + 58);
 
-      // Species name with glow
-      const speciesY = questionY + questionBoxHeight + 18;
-      const speciesText = species || "Chưa xác định";
-      ctx.font = "bold 15px system-ui, sans-serif";
-      ctx.fillStyle = "#4ade80";
-      ctx.shadowColor = "#22c55e50";
-      ctx.shadowBlur = 6;
-      ctx.textAlign = "center";
-      ctx.fillText(speciesText, canvasWidth / 2, speciesY);
-      ctx.shadowColor = "transparent";
+      // Species name with glow - only for campus 1
+      if (showSpecies) {
+        const speciesY = questionY + questionBoxHeight + 18;
+        const speciesText = species || "Chưa xác định";
+        ctx.font = "bold 15px system-ui, sans-serif";
+        ctx.fillStyle = "#4ade80";
+        ctx.shadowColor = "#22c55e50";
+        ctx.shadowBlur = 6;
+        ctx.textAlign = "center";
+        ctx.fillText(speciesText, canvasWidth / 2, speciesY);
+        ctx.shadowColor = "transparent";
+      }
 
       // Download
       const pngFile = canvas.toDataURL("image/png");
