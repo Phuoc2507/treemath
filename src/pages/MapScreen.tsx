@@ -124,7 +124,7 @@ const MapScreen = () => {
   const [hoveredTree, setHoveredTree] = useState<number | null>(null);
   const [selectedCampus, setSelectedCampus] = useState<number>(() => {
     const saved = localStorage.getItem('selectedCampus');
-    return saved ? parseInt(saved) : 1;
+    return saved ? parseInt(saved) : 2;
   });
 
   useEffect(() => {
