@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useRef, useEffect } from 'react';
-import { Calculator, Ruler, TreePine, Loader2, AlertTriangle, Edit, Sparkles, ScanEye, CheckCircle2 } from 'lucide-react';
+import { Calculator, Ruler, TreePine, Loader2, AlertTriangle, Edit, Sparkles, ScanEye, CheckCircle2, Camera, PenTool } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import BoundingBoxEditor from '@/components/BoundingBoxEditor';
@@ -24,6 +24,7 @@ const TreeAnalysisSchema = z.object({
   }).optional(),
   warnings: z.array(z.string()).optional(),
 });
+
 const MeasurementScreen = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -46,6 +47,9 @@ const MeasurementScreen = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isRecalculating, setIsRecalculating] = useState(false);
+  
+  // Image dimensions for manual box creation
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
 
   // Ref to check if the component is still mounted
   const isMounted = useRef(true);
@@ -68,9 +72,17 @@ const MeasurementScreen = () => {
       setBoundingBoxes({ tree: null, person: null });
       setFormData({ circumference: '', height: '' }); // Reset form
 
-      // Create preview URL
+      // Create preview URL and get dimensions
       if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(URL.createObjectURL(file));
+      const newPreviewUrl = URL.createObjectURL(file);
+      setPreviewUrl(newPreviewUrl);
+      
+      // Get image dimensions for manual box creation
+      const img = new Image();
+      img.onload = () => {
+        setImageDimensions({ width: img.width, height: img.height });
+      };
+      img.src = newPreviewUrl;
     }
   };
 
@@ -115,21 +127,45 @@ const MeasurementScreen = () => {
         const calculatedCircumference = data.dbh_cm * Math.PI;
         const calculatedHeight = data.tree_height_m;
 
-        if (calculatedHeight > 0) {
+        if (calculatedHeight > 0 && data.boxes?.tree && data.boxes?.person) {
           setFormData({
             circumference: calculatedCircumference > 0 ? calculatedCircumference.toFixed(1) : '',
             height: calculatedHeight.toFixed(1),
           });
 
           // Store boxes if available
-          if (data.boxes) {
-            setBoundingBoxes({
-              tree: data.boxes.tree,
-              person: data.boxes.person
-            });
-          }
+          setBoundingBoxes({
+            tree: data.boxes.tree,
+            person: data.boxes.person
+          });
+          
+          toast({
+            title: "✓ AI đã nhận diện thành công",
+            description: "Bạn có thể chỉnh sửa vùng đo nếu cần.",
+          });
         } else {
-          setApiError("Không thể xác định cây trong ảnh. Vui lòng thử ảnh khác rõ hơn.");
+          // AI failed to detect - create default boxes for manual adjustment
+          if (imageDimensions) {
+            const { width, height } = imageDimensions;
+            const defaultTreeBox = [width * 0.1, height * 0.05, width * 0.5, height * 0.95];
+            const defaultPersonBox = [width * 0.55, height * 0.3, width * 0.85, height * 0.95];
+            
+            setBoundingBoxes({
+              tree: defaultTreeBox,
+              person: defaultPersonBox
+            });
+            
+            // Auto-open editor for manual adjustment
+            setShowEditor(true);
+            
+            toast({
+              title: "AI chưa nhận diện được",
+              description: "Vui lòng kéo vùng xanh bao quanh cây, vùng đỏ bao quanh người.",
+              variant: "destructive",
+            });
+          } else {
+            setApiError("Không thể xác định cây trong ảnh. Vui lòng thử lại hoặc vẽ thủ công.");
+          }
         }
       }
 
@@ -285,6 +321,34 @@ const MeasurementScreen = () => {
           )}
         </div>
 
+        {/* Photo Guide Section */}
+        <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+          <h4 className="font-bold text-sm mb-2 flex items-center gap-2 text-foreground">
+            <Camera className="w-4 h-4 text-blue-400" />
+            Hướng dẫn chụp ảnh
+          </h4>
+          
+          {/* Placeholder for sample images - user will provide later */}
+          <div className="flex gap-2 mb-3">
+            <div className="flex-1 text-center border-2 border-dashed border-green-500/50 rounded p-2 bg-green-500/5">
+              <div className="text-2xl mb-1">📸</div>
+              <span className="text-green-500 text-xs font-medium">✓ Đúng</span>
+            </div>
+            <div className="flex-1 text-center border-2 border-dashed border-red-500/50 rounded p-2 bg-red-500/5">
+              <div className="text-2xl mb-1">📸</div>
+              <span className="text-red-500 text-xs font-medium">✗ Sai</span>
+            </div>
+          </div>
+          
+          <ul className="text-xs space-y-1 text-muted-foreground">
+            <li>✓ Chụp toàn bộ cây từ gốc đến ngọn</li>
+            <li>✓ Có người đứng cạnh cây làm tham chiếu</li>
+            <li>✓ Người đứng thẳng, cách cây 1-2m</li>
+            <li>✓ Chụp từ xa để thấy cả cây và người</li>
+            <li>✗ Không chụp nghiêng, không che khuất</li>
+          </ul>
+        </div>
+
         {/* AI Measurement Section */}
         <Card className="mb-5 sm:mb-6 bg-gradient-to-br from-primary/10 to-accent/5 border-primary/30 overflow-hidden relative">
           {/* AI Active indicator */}
@@ -426,6 +490,28 @@ const MeasurementScreen = () => {
                 )}
                 {isLoading ? 'AI đang xử lý...' : 'Phân tích với AI'}
               </Button>
+
+              {/* Manual draw button - always visible when image is selected */}
+              {imageFile && imageDimensions && !isLoading && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    // Create default boxes if not exists
+                    if (!boundingBoxes.tree || !boundingBoxes.person) {
+                      const { width, height } = imageDimensions;
+                      setBoundingBoxes({
+                        tree: [width * 0.1, height * 0.05, width * 0.5, height * 0.95],
+                        person: [width * 0.55, height * 0.3, width * 0.85, height * 0.95]
+                      });
+                    }
+                    setShowEditor(true);
+                  }}
+                  className="w-auto px-3 border-primary/30"
+                  title="Vẽ thủ công"
+                >
+                  <PenTool className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                </Button>
+              )}
 
               {boundingBoxes.tree && boundingBoxes.person && !isLoading && (
                 <Button

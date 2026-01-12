@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 interface MasterTree {
   id: number;
   tree_number: number;
+  tree_number_in_campus: number;
   actual_height: number;
   actual_diameter: number;
   species: string;
@@ -292,7 +293,7 @@ const MapScreen = () => {
                 onMouseLeave={() => setHoveredTree(null)}
               >
                 <span className={`font-bold text-sm ${isSelected ? 'text-primary-foreground' : 'text-primary'}`}>
-                  {tree.tree_number}
+                  {tree.tree_number_in_campus || tree.tree_number}
                 </span>
               </button>
             );
@@ -304,7 +305,7 @@ const MapScreen = () => {
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 
                          bg-card/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-primary/30 animate-fade-in">
             <p className="text-sm text-foreground font-medium">
-              Cây số {hoveredTree}: {trees.find(t => t.tree_number === hoveredTree)?.species}
+              Cây số {trees.find(t => t.tree_number === hoveredTree)?.tree_number_in_campus || hoveredTree}: {trees.find(t => t.tree_number === hoveredTree)?.species}
             </p>
           </div>
         )}

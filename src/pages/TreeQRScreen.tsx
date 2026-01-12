@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getBackendClient } from "@/lib/backend/client";
-import { TreeDeciduous, ArrowRight } from "lucide-react";
+import { TreeDeciduous, ArrowRight, Sparkles } from "lucide-react";
 import FallingLeaves from "@/components/FallingLeaves";
 import FloatingChatButton from "@/components/FloatingChatButton";
 import { calculateBiomass, calculateCO2Absorbed, getCO2Equivalents } from "@/lib/calculations";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface LeaderboardEntry {
   id: string;
@@ -20,7 +21,12 @@ const campusNames: { [key: number]: string } = {
   3: 'Cơ sở 3',
 };
 
-const TYPEWRITER_TEXT = "Bạn có biết về sức mạnh của cây xanh? Mỗi cây có thể hấp thụ hàng chục kg CO₂ mỗi năm, góp phần làm mát không khí và bảo vệ môi trường. Hãy cùng đo và khám phá sức mạnh của cây này nhé! 🌍💚";
+// Curiosity questions sequence
+const CURIOSITY_QUESTIONS = [
+  { emoji: "🤔", text: "Bạn có biết cây này đã sống bao lâu?" },
+  { emoji: "🌍", text: "Nó đã hấp thụ bao nhiêu CO₂?" },
+  { emoji: "🏆", text: "Ai là người đo chính xác nhất?" },
+];
 
 const TreeQRScreen = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,8 +36,10 @@ const TreeQRScreen = () => {
     return isNaN(num) ? 1 : num;
   }, [id]);
 
-  // Intro states
-  const [displayedText, setDisplayedText] = useState("");
+  // Animation states
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [displayedCO2, setDisplayedCO2] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showMeasureButton, setShowMeasureButton] = useState(false);
   
@@ -43,31 +51,48 @@ const TreeQRScreen = () => {
   const [treeCO2, setTreeCO2] = useState<number | null>(null);
   const [treeSpecies, setTreeSpecies] = useState<string | null>(null);
   const [treeCampusId, setTreeCampusId] = useState<number>(1);
+  const [treeNumberInCampus, setTreeNumberInCampus] = useState<number | null>(null);
 
-  // Typewriter effect - optimized with RAF
+  // Question sequence animation
   useEffect(() => {
-    let index = 0;
-    let animationId: number;
-    let lastTime = 0;
-    const charDelay = 30;
-    
-    const animate = (time: number) => {
-      if (time - lastTime >= charDelay) {
-        if (index < TYPEWRITER_TEXT.length) {
-          setDisplayedText(TYPEWRITER_TEXT.slice(0, index + 1));
-          index++;
-          lastTime = time;
+    const questionTimer = setInterval(() => {
+      setCurrentQuestionIndex(prev => {
+        if (prev < CURIOSITY_QUESTIONS.length - 1) {
+          return prev + 1;
         } else {
-          setTimeout(() => setShowLeaderboard(true), 300);
-          return;
+          clearInterval(questionTimer);
+          setTimeout(() => setShowAnswer(true), 500);
+          return prev;
         }
-      }
-      animationId = requestAnimationFrame(animate);
-    };
-    
-    animationId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationId);
+      });
+    }, 1500);
+
+    return () => clearInterval(questionTimer);
   }, []);
+
+  // Count up animation for CO2
+  useEffect(() => {
+    if (showAnswer && treeCO2 !== null && treeCO2 > 0) {
+      const duration = 1500;
+      const steps = 40;
+      const increment = treeCO2 / steps;
+      let current = 0;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= treeCO2) {
+          setDisplayedCO2(treeCO2);
+          clearInterval(timer);
+          // Show leaderboard after count up
+          setTimeout(() => setShowLeaderboard(true), 500);
+        } else {
+          setDisplayedCO2(Math.round(current * 10) / 10);
+        }
+      }, duration / steps);
+
+      return () => clearInterval(timer);
+    }
+  }, [showAnswer, treeCO2]);
 
   // Show measure button after leaderboard appears
   useEffect(() => {
@@ -85,7 +110,7 @@ const TreeQRScreen = () => {
       
       const { data, error } = await backend
         .from('master_trees')
-        .select('actual_height, actual_diameter, species, campus_id')
+        .select('actual_height, actual_diameter, species, campus_id, tree_number_in_campus')
         .eq('tree_number', treeNumber)
         .single();
       
@@ -95,6 +120,7 @@ const TreeQRScreen = () => {
         setTreeCO2(Math.round(co2 * 10) / 10);
         setTreeSpecies(data.species);
         setTreeCampusId(data.campus_id || 1);
+        setTreeNumberInCampus(data.tree_number_in_campus);
       }
     };
     
@@ -131,16 +157,13 @@ const TreeQRScreen = () => {
   }, [treeNumber]);
 
   const handleStartMeasure = () => {
-    // Navigate directly to user-info page with tree number
     navigate(`/user-info?tree=${treeNumber}`);
   };
 
-  // Helper to get initials from name
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  // Format CO2 display: convert to tons if >= 1000 kg
   const formatCO2Display = (co2Kg: number): { value: string; unit: string } => {
     if (co2Kg >= 1000) {
       const tons = co2Kg / 1000;
@@ -154,6 +177,8 @@ const TreeQRScreen = () => {
       : co2Kg.toFixed(1).replace('.', ',');
     return { value: formatted, unit: 'kg CO₂' };
   };
+
+  const displayTreeNumber = treeNumberInCampus || treeNumber;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-forest/10 to-background flex flex-col relative overflow-hidden">
@@ -188,163 +213,272 @@ const TreeQRScreen = () => {
         {/* Tree number badge */}
         <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-primary/30 via-forest/25 to-primary/30 text-primary px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg border border-primary/40">
           <span className="text-xl sm:text-2xl">🌳</span>
-          <span className="text-lg sm:text-xl font-bold tracking-wide">Cây số {treeNumber}</span>
+          <span className="text-lg sm:text-xl font-bold tracking-wide">Cây số {displayTreeNumber}</span>
         </div>
       </div>
 
       <div className="flex-1 px-4 sm:px-5 flex flex-col relative z-10 overflow-y-auto">
-        {/* CO2 Highlight Card */}
-        <div className="glass-premium p-4 sm:p-6 mb-4 sm:mb-6 animate-fade-in">
+        {/* Curiosity Questions Sequence */}
+        <div className="glass-premium p-4 sm:p-6 mb-4 sm:mb-6 animate-fade-in min-h-[200px] flex flex-col justify-center">
           {/* Tree species */}
           {treeSpecies && (
-            <p className="text-center text-muted-foreground text-sm sm:text-base mb-2 sm:mb-3">
+            <p className="text-center text-muted-foreground text-sm sm:text-base mb-3 sm:mb-4">
               {treeSpecies}
             </p>
           )}
-          
-          {/* Main stat highlight */}
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-            <div className="stat-highlight">
-              <span className="text-3xl sm:text-4xl font-extrabold text-primary text-glow">
-                {treeCO2 !== null ? formatCO2Display(treeCO2).value : '...'}
-              </span>
-              <div className="flex flex-col">
-                <span className="text-base sm:text-lg font-bold text-foreground">
-                  {treeCO2 !== null ? formatCO2Display(treeCO2).unit : 'kg CO₂'}
-                </span>
-                <span className="text-xs sm:text-sm text-muted-foreground">đã hấp thụ</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Description text */}
-          <p className="text-foreground text-base sm:text-lg leading-relaxed text-center">
-            {displayedText}
-            {displayedText.length < TYPEWRITER_TEXT.length && (
-              <span className="animate-pulse text-primary ml-0.5">|</span>
+
+          {/* Questions Animation */}
+          <AnimatePresence mode="wait">
+            {!showAnswer && (
+              <motion.div
+                key={currentQuestionIndex}
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+                className="text-center py-6"
+              >
+                <motion.div 
+                  className="text-5xl sm:text-6xl mb-4"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {CURIOSITY_QUESTIONS[currentQuestionIndex].emoji}
+                </motion.div>
+                <p className="text-lg sm:text-xl font-medium text-foreground">
+                  {CURIOSITY_QUESTIONS[currentQuestionIndex].text}
+                </p>
+                
+                {/* Progress dots */}
+                <div className="flex justify-center gap-2 mt-4">
+                  {CURIOSITY_QUESTIONS.map((_, idx) => (
+                    <motion.div
+                      key={idx}
+                      className={`w-2 h-2 rounded-full ${idx <= currentQuestionIndex ? 'bg-primary' : 'bg-muted'}`}
+                      animate={idx === currentQuestionIndex ? { scale: [1, 1.3, 1] } : {}}
+                      transition={{ duration: 0.3 }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
             )}
-          </p>
-          
-          {/* CO2 equivalents */}
-          {treeCO2 !== null && (
-            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-primary/20">
-              <p className="text-center text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">Tương đương với:</p>
-              <ul className="space-y-1.5 sm:space-y-2 text-left text-sm sm:text-base">
-                <li className="flex items-center gap-2 text-foreground">
-                  <span>🚗</span>
-                  <span><strong>{getCO2Equivalents(treeCO2).carDays.toLocaleString('vi-VN')}</strong> ngày khí thải xe hơi</span>
-                </li>
-                <li className="flex items-center gap-2 text-foreground">
-                  <span>📱</span>
-                  <span><strong>{getCO2Equivalents(treeCO2).phoneCharges.toLocaleString('vi-VN')}</strong> lần sạc điện thoại</span>
-                </li>
-                <li className="flex items-center gap-2 text-foreground">
-                  <span>♻️</span>
-                  <span><strong>{getCO2Equivalents(treeCO2).plasticBottles.toLocaleString('vi-VN')}</strong> chai nhựa sản xuất</span>
-                </li>
-              </ul>
-            </div>
-          )}
+          </AnimatePresence>
+
+          {/* Answer Reveal with Count Up */}
+          <AnimatePresence>
+            {showAnswer && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, type: "spring" }}
+                className="text-center"
+              >
+                {/* Sparkle effect */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex justify-center mb-3"
+                >
+                  <Sparkles className="w-6 h-6 text-gold animate-pulse" />
+                </motion.div>
+                
+                {/* Main CO2 stat with count up */}
+                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
+                  <div className="stat-highlight">
+                    <motion.span 
+                      className="text-4xl sm:text-5xl font-extrabold text-primary text-glow"
+                      animate={{ scale: displayedCO2 === treeCO2 ? [1, 1.05, 1] : 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {formatCO2Display(displayedCO2).value}
+                    </motion.span>
+                    <div className="flex flex-col ml-2">
+                      <span className="text-lg sm:text-xl font-bold text-foreground">
+                        {formatCO2Display(treeCO2 || 0).unit}
+                      </span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">đã hấp thụ!</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Celebration text */}
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-base sm:text-lg text-foreground leading-relaxed"
+                >
+                  🌍 Cây này đang góp phần làm mát không khí và bảo vệ Trái Đất!
+                </motion.p>
+
+                {/* CO2 equivalents */}
+                {treeCO2 !== null && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-4 pt-4 border-t border-primary/20"
+                  >
+                    <p className="text-center text-xs sm:text-sm text-muted-foreground mb-3">Tương đương với:</p>
+                    <ul className="space-y-2 text-left text-sm sm:text-base">
+                      <motion.li 
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                        className="flex items-center gap-2 text-foreground"
+                      >
+                        <span>🚗</span>
+                        <span><strong>{getCO2Equivalents(treeCO2).carDays.toLocaleString('vi-VN')}</strong> ngày khí thải xe hơi</span>
+                      </motion.li>
+                      <motion.li 
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                        className="flex items-center gap-2 text-foreground"
+                      >
+                        <span>📱</span>
+                        <span><strong>{getCO2Equivalents(treeCO2).phoneCharges.toLocaleString('vi-VN')}</strong> lần sạc điện thoại</span>
+                      </motion.li>
+                      <motion.li 
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.8 }}
+                        className="flex items-center gap-2 text-foreground"
+                      >
+                        <span>♻️</span>
+                        <span><strong>{getCO2Equivalents(treeCO2).plasticBottles.toLocaleString('vi-VN')}</strong> chai nhựa sản xuất</span>
+                      </motion.li>
+                    </ul>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Leaderboard */}
-        {showLeaderboard && (
-          <div className="glass-premium p-4 sm:p-5 mb-4 sm:mb-6 animate-fade-in">
-            <h3 className="text-foreground font-bold text-center mb-4 sm:mb-5 text-lg sm:text-xl flex items-center justify-center gap-2 sm:gap-3">
-              <span className="text-2xl sm:text-3xl">🏆</span>
-              <span>Bảng xếp hạng</span>
-            </h3>
+        <AnimatePresence>
+          {showLeaderboard && (
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="glass-premium p-4 sm:p-5 mb-4 sm:mb-6"
+            >
+              <h3 className="text-foreground font-bold text-center mb-4 sm:mb-5 text-lg sm:text-xl flex items-center justify-center gap-2 sm:gap-3">
+                <span className="text-2xl sm:text-3xl">🏆</span>
+                <span>Bảng xếp hạng</span>
+              </h3>
 
-            {leaderboardLoading ? (
-              <div className="text-muted-foreground text-center py-4 sm:py-6 text-sm sm:text-base">Đang tải...</div>
-            ) : leaderboard.length === 0 ? (
-              <div className="text-center py-4 sm:py-6">
-                <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">🎯</div>
-                <p className="text-muted-foreground text-sm sm:text-base">
-                  Chưa có ai đo cây này
-                </p>
-                <p className="text-primary font-semibold text-base sm:text-lg mt-1">
-                  Hãy là người đầu tiên!
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2 sm:space-y-3">
-                {leaderboard.slice(0, 3).map((entry, index) => (
-                  <div
-                    key={entry.id}
-                    className={`flex items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
-                      index === 0 ? "rank-gold scale-[1.02]" :
-                      index === 1 ? "rank-silver" :
-                      "rank-bronze"
-                    }`}
+              {leaderboardLoading ? (
+                <div className="text-muted-foreground text-center py-4 sm:py-6 text-sm sm:text-base">Đang tải...</div>
+              ) : leaderboard.length === 0 ? (
+                <motion.div 
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className="text-center py-4 sm:py-6"
+                >
+                  <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">🎯</div>
+                  <p className="text-muted-foreground text-sm sm:text-base">
+                    Chưa có ai đo cây này
+                  </p>
+                  <motion.p 
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                    className="text-primary font-semibold text-base sm:text-lg mt-1"
                   >
-                    {/* Medal Badge */}
-                    <div className={`relative flex-shrink-0 ${index === 0 ? 'scale-110' : ''}`}>
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-2xl sm:text-3xl ${
-                        index === 0 ? 'glow-gold' : ''
-                      }`}>
-                        {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                    Hãy là người đầu tiên!
+                  </motion.p>
+                </motion.div>
+              ) : (
+                <div className="space-y-2 sm:space-y-3">
+                  {leaderboard.slice(0, 3).map((entry, index) => (
+                    <motion.div
+                      key={entry.id}
+                      initial={{ x: -30, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`flex items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+                        index === 0 ? "rank-gold scale-[1.02]" :
+                        index === 1 ? "rank-silver" :
+                        "rank-bronze"
+                      }`}
+                    >
+                      {/* Medal Badge */}
+                      <div className={`relative flex-shrink-0 ${index === 0 ? 'scale-110' : ''}`}>
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-2xl sm:text-3xl ${
+                          index === 0 ? 'glow-gold' : ''
+                        }`}>
+                          {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                        </div>
                       </div>
-                    </div>
-                    
-                    {/* Avatar */}
-                    <div className={`avatar-ring w-9 h-9 sm:w-11 sm:h-11 flex-shrink-0 text-xs sm:text-sm ${
-                      index === 0 ? 'border-gold/70 bg-gradient-to-br from-gold/30 to-gold/10' : 
-                      index === 1 ? 'border-silver/70 bg-gradient-to-br from-silver/30 to-silver/10' :
-                      'border-bronze/70 bg-gradient-to-br from-bronze/30 to-bronze/10'
-                    }`}>
-                      <span className={`${
-                        index === 0 ? 'text-gold' : 
-                        index === 1 ? 'text-silver' : 
-                        'text-bronze'
-                      } font-bold`}>
-                        {getInitials(entry.user_name)}
-                      </span>
-                    </div>
-                    
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-bold truncate ${
-                        index === 0 ? 'text-base sm:text-lg text-glow-gold text-gold' : 'text-sm sm:text-base text-foreground'
+                      
+                      {/* Avatar */}
+                      <div className={`avatar-ring w-9 h-9 sm:w-11 sm:h-11 flex-shrink-0 text-xs sm:text-sm ${
+                        index === 0 ? 'border-gold/70 bg-gradient-to-br from-gold/30 to-gold/10' : 
+                        index === 1 ? 'border-silver/70 bg-gradient-to-br from-silver/30 to-silver/10' :
+                        'border-bronze/70 bg-gradient-to-br from-bronze/30 to-bronze/10'
                       }`}>
-                        {entry.user_name}
-                      </p>
-                      <p className="text-muted-foreground text-xs sm:text-sm truncate">{entry.user_class}</p>
-                    </div>
-                    
-                    {/* Score */}
-                    <div className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl ${
-                      index === 0 
-                        ? 'bg-gradient-to-r from-gold/30 to-gold/20 border border-gold/40' 
-                        : 'bg-primary/20 border border-primary/30'
-                    }`}>
-                      <span className={`font-extrabold text-base sm:text-lg ${
-                        index === 0 ? 'text-gold text-glow-gold' : 'text-primary'
+                        <span className={`${
+                          index === 0 ? 'text-gold' : 
+                          index === 1 ? 'text-silver' : 
+                          'text-bronze'
+                        } font-bold`}>
+                          {getInitials(entry.user_name)}
+                        </span>
+                      </div>
+                      
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-bold truncate ${
+                          index === 0 ? 'text-base sm:text-lg text-glow-gold text-gold' : 'text-sm sm:text-base text-foreground'
+                        }`}>
+                          {entry.user_name}
+                        </p>
+                        <p className="text-muted-foreground text-xs sm:text-sm truncate">{entry.user_class}</p>
+                      </div>
+                      
+                      {/* Score */}
+                      <div className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl ${
+                        index === 0 
+                          ? 'bg-gradient-to-r from-gold/30 to-gold/20 border border-gold/40' 
+                          : 'bg-primary/20 border border-primary/30'
                       }`}>
-                        {entry.accuracy_score.toFixed(0)}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                        <span className={`font-extrabold text-base sm:text-lg ${
+                          index === 0 ? 'text-gold text-glow-gold' : 'text-primary'
+                        }`}>
+                          {entry.accuracy_score.toFixed(0)}%
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* CTA Button */}
-      {showMeasureButton && (
-        <div className="p-4 sm:p-6 animate-fade-in relative z-10">
-          <button
-            onClick={handleStartMeasure}
-            className="btn-cta w-full py-4 sm:py-5 text-lg sm:text-xl text-primary-foreground flex items-center justify-center gap-2 sm:gap-3 animate-breathe"
+      <AnimatePresence>
+        {showMeasureButton && (
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, type: "spring" }}
+            className="p-4 sm:p-6 relative z-10"
           >
-            <span>🌳</span>
-            <span>Bắt đầu đo cây</span>
-            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        </div>
-      )}
+            <button
+              onClick={handleStartMeasure}
+              className="btn-cta w-full py-4 sm:py-5 text-lg sm:text-xl text-primary-foreground flex items-center justify-center gap-2 sm:gap-3 animate-breathe"
+            >
+              <span>🌳</span>
+              <span>Bắt đầu đo cây</span>
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating Chat Button */}
       <FloatingChatButton />

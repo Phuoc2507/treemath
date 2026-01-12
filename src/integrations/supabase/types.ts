@@ -65,6 +65,7 @@ export type Database = {
           location_description: string | null
           species: string | null
           tree_number: number
+          tree_number_in_campus: number | null
           updated_at: string | null
         }
         Insert: {
@@ -76,6 +77,7 @@ export type Database = {
           location_description?: string | null
           species?: string | null
           tree_number: number
+          tree_number_in_campus?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -87,6 +89,7 @@ export type Database = {
           location_description?: string | null
           species?: string | null
           tree_number?: number
+          tree_number_in_campus?: number | null
           updated_at?: string | null
         }
         Relationships: []
