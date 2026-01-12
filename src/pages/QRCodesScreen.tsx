@@ -199,7 +199,7 @@ const QRCodesScreen = () => {
       // Curiosity question box - more attractive design
       const questionY = qrY + qrSize + 24;
       const questionBoxHeight = questionHeight;
-      const questionBoxWidth = qrSize + 30;
+      const questionBoxWidth = canvasWidth - padding * 2 + 8; // Wider box to match canvas width
       const questionBoxX = (canvasWidth - questionBoxWidth) / 2;
       
       // Question box with beautiful gradient
