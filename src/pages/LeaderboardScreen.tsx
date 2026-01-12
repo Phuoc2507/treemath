@@ -18,6 +18,7 @@ interface LeaderboardEntry {
 
 interface MasterTree {
   tree_number: number;
+  tree_number_in_campus: number;
   campus_id: number;
 }
 
@@ -57,7 +58,7 @@ const LeaderboardScreen = () => {
 
       const { data } = await backend
         .from('master_trees')
-        .select('tree_number, campus_id')
+        .select('tree_number, tree_number_in_campus, campus_id')
         .order('tree_number');
 
       if (data) {
@@ -252,7 +253,9 @@ const LeaderboardScreen = () => {
             </Button>
             
             <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/20 rounded-lg border border-primary/30 min-w-[100px] sm:min-w-[120px]">
-              <span className="text-base sm:text-lg font-bold text-primary">Cây số {currentTree}</span>
+              <span className="text-base sm:text-lg font-bold text-primary">
+                Cây số {campusTrees.find(t => t.tree_number === currentTree)?.tree_number_in_campus || currentTree}
+              </span>
             </div>
             
             <Button

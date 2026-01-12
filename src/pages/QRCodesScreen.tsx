@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 interface MasterTree {
   id: number;
   tree_number: number;
+  tree_number_in_campus: number;
   species: string;
   location_description: string | null;
   campus_id: number;
@@ -44,7 +45,7 @@ const QRCodesScreen = () => {
 
       const { data, error } = await backend
         .from("master_trees")
-        .select("id, tree_number, species, location_description, campus_id")
+        .select("id, tree_number, tree_number_in_campus, species, location_description, campus_id")
         .order("tree_number");
 
       if (!error && data) {
@@ -72,7 +73,7 @@ const QRCodesScreen = () => {
     window.print();
   };
 
-  const downloadSingleQR = (treeNumber: number, species: string, campusId: number) => {
+  const downloadSingleQR = (treeNumber: number, treeNumberInCampus: number, species: string, campusId: number) => {
     const svg = document.getElementById(`qr-${treeNumber}`);
     if (!svg) return;
 
@@ -125,8 +126,8 @@ const QRCodesScreen = () => {
       ctx.textBaseline = "middle";
       ctx.fillText(campusText, canvasWidth / 2, campusBadgeY + campusBadgeHeight / 2);
 
-      // Green badge for tree number
-      const badgeText = `Cây số ${treeNumber}`;
+      // Green badge for tree number (use tree_number_in_campus)
+      const badgeText = `Cây số ${treeNumberInCampus || treeNumber}`;
       ctx.font = "bold 14px sans-serif";
       const badgeTextWidth = ctx.measureText(badgeText).width;
       const badgeWidth = badgeTextWidth + 32;
@@ -239,13 +240,13 @@ const QRCodesScreen = () => {
                   {campusNames[tree.campus_id || 1]}
                 </div>
 
-                {/* Tree Number Badge */}
+                {/* Tree Number Badge - use tree_number_in_campus */}
                 <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold mb-4">
-                  Cây số {tree.tree_number}
+                  Cây số {tree.tree_number_in_campus || tree.tree_number}
                 </div>
 
                 {/* QR Code */}
-                <div className="bg-white p-3 rounded-lg mb-4">
+                <div className="bg-white p-3 rounded-lg mb-3">
                   <QRCodeSVG
                     id={`qr-${tree.tree_number}`}
                     value={`${baseUrl}/tree/${tree.tree_number}`}
@@ -253,6 +254,16 @@ const QRCodesScreen = () => {
                     level="H"
                     includeMargin={false}
                   />
+                </div>
+
+                {/* Curiosity question */}
+                <div className="bg-gradient-to-r from-primary/20 to-accent/20 px-3 py-2 rounded-lg mb-3 text-center w-full">
+                  <p className="text-sm font-medium text-foreground">
+                    🌳 Cây này hấp thụ bao nhiêu CO₂?
+                  </p>
+                  <p className="text-xs text-primary font-bold">
+                    Quét để khám phá!
+                  </p>
                 </div>
 
                 {/* Tree Info */}
@@ -275,7 +286,7 @@ const QRCodesScreen = () => {
                   variant="ghost"
                   size="sm"
                   className="mt-3 print:hidden"
-                  onClick={() => downloadSingleQR(tree.tree_number, tree.species || "", tree.campus_id || 1)}
+                  onClick={() => downloadSingleQR(tree.tree_number, tree.tree_number_in_campus, tree.species || "", tree.campus_id || 1)}
                 >
                   <Download className="w-4 h-4 mr-1" />
                   Tải PNG
