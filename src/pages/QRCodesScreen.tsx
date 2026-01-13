@@ -22,6 +22,26 @@ const campusNames: { [key: number]: string } = {
   3: 'Cơ sở 3',
 };
 
+// Diverse curiosity questions for QR codes
+const CURIOSITY_QUESTIONS = [
+  { main: "🌿 Cây này hấp thụ", sub: "bao nhiêu CO₂?" },
+  { main: "🌳 Bạn biết cây này", sub: "bao nhiêu tuổi không?" },
+  { main: "💨 Mỗi năm cây này", sub: "hấp thụ bao nhiêu khí?" },
+  { main: "🌍 Cây này góp phần", sub: "cứu Trái Đất như nào?" },
+  { main: "🍃 Cây xanh này có", sub: "siêu năng lực gì?" },
+  { main: "🔬 Khám phá bí mật", sub: "của cây xanh này!" },
+  { main: "🌱 Cây này đã lớn", sub: "được bao nhiêu rồi?" },
+  { main: "💚 Lá cây này làm", sub: "sạch không khí ra sao?" },
+  { main: "🌲 Cây này nặng", sub: "bao nhiêu kg nhỉ?" },
+  { main: "✨ Cây xanh này có", sub: "điều gì đặc biệt?" },
+];
+
+// Get a question based on tree number (consistent per tree)
+const getQuestionForTree = (treeNumber: number) => {
+  const index = treeNumber % CURIOSITY_QUESTIONS.length;
+  return CURIOSITY_QUESTIONS[index];
+};
+
 const QRCodesScreen = () => {
   const navigate = useNavigate();
   const [trees, setTrees] = useState<MasterTree[]>([]);
@@ -223,6 +243,9 @@ const QRCodesScreen = () => {
       ctx.roundRect(questionBoxX, questionY, questionBoxWidth, questionBoxHeight, 14);
       ctx.stroke();
       
+      // Get diverse question for this tree
+      const question = getQuestionForTree(treeNumber);
+      
       // Main question text with shadow
       ctx.shadowColor = "#16a34a30";
       ctx.shadowBlur = 2;
@@ -230,8 +253,8 @@ const QRCodesScreen = () => {
       ctx.font = "bold 14px system-ui, sans-serif";
       ctx.fillStyle = "#166534";
       ctx.textAlign = "center";
-      ctx.fillText("🌿 Cây này hấp thụ", canvasWidth / 2, questionY + 22);
-      ctx.fillText("bao nhiêu CO₂?", canvasWidth / 2, questionY + 40);
+      ctx.fillText(question.main, canvasWidth / 2, questionY + 22);
+      ctx.fillText(question.sub, canvasWidth / 2, questionY + 40);
       ctx.shadowColor = "transparent";
       
       // Sub text
@@ -346,15 +369,20 @@ const QRCodesScreen = () => {
                   />
                 </div>
 
-                {/* Curiosity question - nature-friendly style */}
-                <div className="bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/20 border border-green-500/30 px-4 py-3 rounded-xl mb-3 text-center w-full print:bg-green-50 print:border-green-600">
-                  <p className="text-base md:text-lg font-bold text-green-700 dark:text-green-400 leading-tight print:text-green-800" style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}>
-                    🌿 Cây này hấp thụ bao nhiêu CO₂?
-                  </p>
-                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-1 print:text-emerald-700" style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}>
-                    ✨ Quét mã để khám phá!
-                  </p>
-                </div>
+                {/* Curiosity question - nature-friendly style with diverse questions */}
+                {(() => {
+                  const question = getQuestionForTree(tree.tree_number);
+                  return (
+                    <div className="bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-teal-500/20 border border-green-500/30 px-4 py-3 rounded-xl mb-3 text-center w-full print:bg-green-50 print:border-green-600">
+                      <p className="text-base md:text-lg font-bold text-green-700 dark:text-green-400 leading-tight print:text-green-800" style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}>
+                        {question.main} {question.sub}
+                      </p>
+                      <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-1 print:text-emerald-700" style={{ fontFamily: "'Quicksand', 'Nunito', sans-serif" }}>
+                        ✨ Quét mã để khám phá!
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* Tree Info */}
                 <div className="text-center mb-3">
