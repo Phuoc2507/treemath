@@ -25,7 +25,7 @@ const campusNames: { [key: number]: string } = {
 // Diverse curiosity questions for QR codes
 const CURIOSITY_QUESTIONS = [
   { main: "🌿 Cây này hấp thụ", sub: "bao nhiêu CO₂?" },
-  { main: "🌳 Cây này đã sống", sub: "được bao nhiêu năm?" },
+  { main: "🌳 Cây tốt đấy, nhưng", sub: "là bao nhiêu kg?" },
   { main: "💨 Mỗi năm cây này", sub: "hấp thụ bao nhiêu khí?" },
   { main: "🌍 Cây này góp phần", sub: "cứu Trái Đất như nào?" },
   { main: "🍃 Cây xanh này có", sub: "siêu năng lực gì?" },
