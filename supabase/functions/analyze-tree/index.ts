@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // CORS headers - allow all origins for public API
 const corsHeaders = {
@@ -15,15 +16,106 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/jpg",
 ]);
 
-serve(async (req) => {
-  // Handle CORS preflight
+// Rate limiting constants
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per minute per IP
 
+// Rate limiting function
+async function checkRateLimit(clientIp: string): Promise<{ allowed: boolean; count: number }> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase credentials for rate limiting");
+    return { allowed: true, count: 0 }; // Fail open if no credentials
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const now = new Date();
+  const windowStart = new Date(now.getTime() - RATE_LIMIT_WINDOW_MS);
+  const action = "analyze_tree";
+
+  try {
+    // Check current count in window
+    const { data: existing, error: selectError } = await supabase
+      .from("request_rate_limits")
+      .select("count, window_start")
+      .eq("ip", clientIp)
+      .eq("action", action)
+      .gte("window_start", windowStart.toISOString())
+      .order("window_start", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (selectError && selectError.code !== "PGRST116") {
+      console.error("Rate limit check error:", selectError);
+      return { allowed: true, count: 0 }; // Fail open on error
+    }
+
+    if (existing) {
+      // Update existing record
+      const newCount = existing.count + 1;
+      if (newCount > MAX_REQUESTS_PER_WINDOW) {
+        return { allowed: false, count: newCount };
+      }
+
+      await supabase
+        .from("request_rate_limits")
+        .update({ count: newCount })
+        .eq("ip", clientIp)
+        .eq("action", action)
+        .eq("window_start", existing.window_start);
+
+      return { allowed: true, count: newCount };
+    } else {
+      // Create new record
+      await supabase.from("request_rate_limits").insert({
+        ip: clientIp,
+        action: action,
+        window_start: now.toISOString(),
+        count: 1,
+      });
+
+      return { allowed: true, count: 1 };
+    }
+  } catch (error) {
+    console.error("Rate limit error:", error);
+    return { allowed: true, count: 0 }; // Fail open on error
+  }
+}
+
+serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Get client IP for rate limiting
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+                     req.headers.get("x-real-ip") || 
+                     "unknown";
+
+    // Check rate limit
+    const { allowed, count } = await checkRateLimit(clientIp);
+    if (!allowed) {
+      console.warn(`Rate limit exceeded for IP: ${clientIp.substring(0, 10)}... (${count} requests)`);
+      return new Response(
+        JSON.stringify({ 
+          error: "Rate limit exceeded. Please try again later.",
+          retry_after_seconds: 60
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            "Content-Type": "application/json",
+            "Retry-After": "60"
+          } 
+        }
+      );
+    }
+
     const upstreamUrl = Deno.env.get("TREE_ANALYSIS_UPSTREAM_URL");
     if (!upstreamUrl) {
       console.error("TREE_ANALYSIS_UPSTREAM_URL is not configured");
